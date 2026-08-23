@@ -14,7 +14,208 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      artifacts: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          kind: string
+          thread_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          kind: string
+          thread_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          kind?: string
+          thread_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "artifacts_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      audience_briefs: {
+        Row: {
+          broken_phone: string | null
+          business_summary: string | null
+          buyer_filters: string | null
+          care_fear_need: string | null
+          created_at: string
+          desired_outcomes: string | null
+          ecosystems: string | null
+          icp_description: string | null
+          icp_titles: string | null
+          id: string
+          is_active: boolean
+          name: string
+          offer_summary: string | null
+          pain_points: string | null
+          partner_types: string | null
+          problems_solved: string | null
+          story_notes: string | null
+          unfair_advantage: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          broken_phone?: string | null
+          business_summary?: string | null
+          buyer_filters?: string | null
+          care_fear_need?: string | null
+          created_at?: string
+          desired_outcomes?: string | null
+          ecosystems?: string | null
+          icp_description?: string | null
+          icp_titles?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          offer_summary?: string | null
+          pain_points?: string | null
+          partner_types?: string | null
+          problems_solved?: string | null
+          story_notes?: string | null
+          unfair_advantage?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          broken_phone?: string | null
+          business_summary?: string | null
+          buyer_filters?: string | null
+          care_fear_need?: string | null
+          created_at?: string
+          desired_outcomes?: string | null
+          ecosystems?: string | null
+          icp_description?: string | null
+          icp_titles?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          offer_summary?: string | null
+          pain_points?: string | null
+          partner_types?: string | null
+          problems_solved?: string | null
+          story_notes?: string | null
+          unfair_advantage?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          client_message_id: string | null
+          created_at: string
+          id: string
+          parts: Json
+          role: string
+          thread_id: string
+          user_id: string
+        }
+        Insert: {
+          client_message_id?: string | null
+          created_at?: string
+          id?: string
+          parts?: Json
+          role: string
+          thread_id: string
+          user_id: string
+        }
+        Update: {
+          client_message_id?: string | null
+          created_at?: string
+          id?: string
+          parts?: Json
+          role?: string
+          thread_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      threads: {
+        Row: {
+          agent: string
+          created_at: string
+          id: string
+          mode: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent?: string
+          created_at?: string
+          id?: string
+          mode?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent?: string
+          created_at?: string
+          id?: string
+          mode?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
