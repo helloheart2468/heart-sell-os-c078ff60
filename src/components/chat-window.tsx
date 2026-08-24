@@ -108,7 +108,6 @@ export function ChatWindow({
           {messages.map((message) => (
             <Message from={message.role} key={message.id}>
               <MessageContent
-                variant={message.role === "user" ? "contained" : "flat"}
                 className={
                   message.role === "user"
                     ? "bg-primary text-primary-foreground"
@@ -121,7 +120,7 @@ export function ChatWindow({
           ))}
 
           {status === "submitted" ? (
-            <Shimmer className="text-sm">{config.name} is thinking…</Shimmer>
+            <Shimmer className="text-sm">{`${config.name} is thinking…`}</Shimmer>
           ) : null}
 
           {error ? (

@@ -119,7 +119,7 @@ function StudioHome() {
                 onSubmit={async (values) => {
                   const agent = openAgent;
                   const title =
-                    values.contact || values.market || `${AGENTS[agent].structuredTitle}`;
+                    values["contact"] || values["market"] || `${AGENTS[agent].structuredTitle}`;
                   setOpenAgent(null);
                   await start(
                     agent,

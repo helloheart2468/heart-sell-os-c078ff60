@@ -75,7 +75,7 @@ function ThreadPage() {
         threadId={threadId}
         agent={agent}
         initialMessages={history.data ?? []}
-        autoSend={pending}
+        {...(pending ? { autoSend: pending } : {})}
         onFirstMessage={(text) => {
           if ((history.data ?? []).length > 0) return;
           void renameThread(threadId, `${config.name} · ${text.slice(0, 60)}`).then(() => {

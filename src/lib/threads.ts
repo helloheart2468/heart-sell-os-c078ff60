@@ -100,7 +100,7 @@ export async function getActiveBrief(): Promise<BriefRecord | null> {
     .limit(1)
     .maybeSingle();
   if (error) throw error;
-  return (data as BriefRecord) ?? null;
+  return (data as unknown as BriefRecord) ?? null;
 }
 
 export async function saveBrief(values: Record<string, string>, existingId?: string) {

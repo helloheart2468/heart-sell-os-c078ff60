@@ -75,7 +75,7 @@ export function StructuredForm({
             />
           ) : field.type === "select" ? (
             <Select
-              value={values[field.name] || undefined}
+              value={values[field.name] ?? ""}
               onValueChange={(value) => set(field.name, value)}
             >
               <SelectTrigger id={`${agent}-${field.name}`}>
