@@ -14,6 +14,8 @@ import { Route as AuthRouteImport } from './routes/auth'
 import { Route as StudioRouteImport } from './routes/studio'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as StudioIndexRouteImport } from './routes/studio.index'
+import { Route as StudioThreadIdRouteImport } from './routes/studio.$threadId'
+import { Route as StudioBriefRouteImport } from './routes/studio.brief'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,18 +42,32 @@ const StudioIndexRoute = StudioIndexRouteImport.update({
   path: '/',
   getParentRoute: () => StudioRoute,
 } as any)
+const StudioThreadIdRoute = StudioThreadIdRouteImport.update({
+  id: '/$threadId',
+  path: '/$threadId',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioBriefRoute = StudioBriefRouteImport.update({
+  id: '/brief',
+  path: '/brief',
+  getParentRoute: () => StudioRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/studio': typeof StudioRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/studio/$threadId': typeof StudioThreadIdRoute
+  '/studio/brief': typeof StudioBriefRoute
   '/studio/': typeof StudioIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/api/chat': typeof ApiChatRoute
+  '/studio/$threadId': typeof StudioThreadIdRoute
+  '/studio/brief': typeof StudioBriefRoute
   '/studio': typeof StudioIndexRoute
 }
 export interface FileRoutesById {
@@ -60,14 +76,37 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/studio': typeof StudioRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/studio/$threadId': typeof StudioThreadIdRoute
+  '/studio/brief': typeof StudioBriefRoute
   '/studio/': typeof StudioIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/studio' | '/api/chat' | '/studio/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/studio'
+    | '/api/chat'
+    | '/studio/$threadId'
+    | '/studio/brief'
+    | '/studio/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/api/chat' | '/studio'
-  id: '__root__' | '/' | '/auth' | '/studio' | '/api/chat' | '/studio/'
+  to:
+    | '/'
+    | '/auth'
+    | '/api/chat'
+    | '/studio/$threadId'
+    | '/studio/brief'
+    | '/studio'
+  id:
+    | '__root__'
+    | '/'
+    | '/auth'
+    | '/studio'
+    | '/api/chat'
+    | '/studio/$threadId'
+    | '/studio/brief'
+    | '/studio/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -114,14 +153,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioIndexRouteImport
       parentRoute: typeof StudioRoute
     }
+    '/studio/$threadId': {
+      id: '/studio/$threadId'
+      path: '/$threadId'
+      fullPath: '/studio/$threadId'
+      preLoaderRoute: typeof StudioThreadIdRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/brief': {
+      id: '/studio/brief'
+      path: '/brief'
+      fullPath: '/studio/brief'
+      preLoaderRoute: typeof StudioBriefRouteImport
+      parentRoute: typeof StudioRoute
+    }
   }
 }
 
 interface StudioRouteChildren {
+  StudioThreadIdRoute: typeof StudioThreadIdRoute
+  StudioBriefRoute: typeof StudioBriefRoute
   StudioIndexRoute: typeof StudioIndexRoute
 }
 
 const StudioRouteChildren: StudioRouteChildren = {
+  StudioThreadIdRoute: StudioThreadIdRoute,
+  StudioBriefRoute: StudioBriefRoute,
   StudioIndexRoute: StudioIndexRoute,
 }
 
