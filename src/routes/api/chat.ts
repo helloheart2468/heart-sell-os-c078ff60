@@ -1,9 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createClient } from "@supabase/supabase-js";
-import { convertToModelMessages, streamText, type UIMessage } from "ai";
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import {
+  convertToModelMessages,
+  stepCountIs,
+  streamText,
+  tool,
+  type UIMessage,
+} from "ai";
+import { z } from "zod";
 
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
-import { isAgentId } from "@/lib/heart-sell";
+import { isAgentId, type AgentId } from "@/lib/heart-sell";
+import { searchProspects } from "@/lib/perplexity.server";
 import { buildSystemPrompt } from "@/lib/prompts.server";
 
 type ChatBody = {
@@ -19,6 +27,100 @@ function json(body: unknown, status: number) {
   });
 }
 
+function buildTools(agent: AgentId, supabase: SupabaseClient) {
+  const lookupSavedContacts = tool({
+    description:
+      "Look up people the founder has already saved to their Heart Sell lists, by name, company or keyword. Use this before asking the founder to re-type details about a contact.",
+    inputSchema: z.object({
+      query: z.string().describe("Name, company or keyword to search saved prospects for."),
+    }),
+    execute: async ({ query }) => {
+      const term = query.replace(/[%,]/g, " ").trim();
+      const { data, error } = await supabase
+        .from("prospects")
+        .select(
+          "id, name, title, company, blurb, location, linkedin_url, social_url, website, email, audience, temperature, status, why_fits, notes, list_id",
+        )
+        .or(`name.ilike.%${term}%,company.ilike.%${term}%,blurb.ilike.%${term}%`)
+        .limit(8);
+      if (error) return { error: error.message, matches: [] };
+      return { matches: data ?? [] };
+    },
+  });
+
+  const listMyLists = tool({
+    description: "List the founder's saved prospect lists with how many people are on each.",
+    inputSchema: z.object({}),
+    execute: async () => {
+      const { data: lists, error } = await supabase
+        .from("prospect_lists")
+        .select("id, name, audience, temperature")
+        .order("updated_at", { ascending: false })
+        .limit(25);
+      if (error) return { error: error.message, lists: [] };
+      const { data: rows } = await supabase.from("prospects").select("list_id");
+      const counts = new Map<string, number>();
+      for (const row of rows ?? []) {
+        const key = (row as { list_id: string | null }).list_id;
+        if (key) counts.set(key, (counts.get(key) ?? 0) + 1);
+      }
+      return {
+        lists: (lists ?? []).map((list) => ({
+          ...list,
+          count: counts.get((list as { id: string }).id) ?? 0,
+        })),
+      };
+    },
+  });
+
+  const base = { lookup_saved_contacts: lookupSavedContacts, list_my_lists: listMyLists };
+
+  if (agent !== "scout") return base;
+
+  return {
+    ...base,
+    find_prospects: tool({
+      description:
+        "Search the live web for real people or organizations matching an agreed prospect brief. Only call this AFTER the founder has confirmed the target profile. Returns real named prospects with links the founder can save to a list.",
+      inputSchema: z.object({
+        brief: z
+          .string()
+          .describe(
+            "A rich description of exactly who to find: role/title, type of business, size, signals, and any qualifying filters.",
+          ),
+        audience: z
+          .string()
+          .describe("Ideal Clients, Potential Partners or Ecosystem Contacts."),
+        region: z.string().describe("Geography or market focus. Use 'any' if unrestricted."),
+        count: z.number().describe("How many prospects to return, typically 10."),
+      }),
+      execute: async ({ brief, audience, region, count }) => {
+        try {
+          const result = await searchProspects({
+            brief,
+            audience,
+            count,
+            ...(region && region.toLowerCase() !== "any" ? { region } : {}),
+          });
+          return {
+            audience,
+            ...(region ? { region } : {}),
+            found: result.prospects.length,
+            prospects: result.prospects,
+            citations: result.citations.slice(0, 10),
+            ...(result.notes ? { notes: result.notes } : {}),
+          };
+        } catch (error) {
+          return {
+            error: error instanceof Error ? error.message : "Prospect search failed.",
+            prospects: [],
+          };
+        }
+      },
+    }),
+  };
+}
+
 export const Route = createFileRoute("/api/chat")({
   server: {
     handlers: {
@@ -29,7 +131,7 @@ export const Route = createFileRoute("/api/chat")({
         const body = (await request.json()) as ChatBody;
         const messages = body.messages;
         const threadId = body.threadId;
-        const agent = body.agent && isAgentId(body.agent) ? body.agent : "sage";
+        const agent: AgentId = body.agent && isAgentId(body.agent) ? body.agent : "sage";
 
         if (!Array.isArray(messages) || !threadId) {
           return json({ error: "Missing messages or conversation id." }, 400);
@@ -86,6 +188,8 @@ export const Route = createFileRoute("/api/chat")({
             model: gateway("google/gemini-3.7-flash"),
             system: buildSystemPrompt(agent, brief ?? null),
             messages: await convertToModelMessages(messages),
+            tools: buildTools(agent, supabase),
+            stopWhen: stepCountIs(50),
           });
 
           return result.toUIMessageStreamResponse({

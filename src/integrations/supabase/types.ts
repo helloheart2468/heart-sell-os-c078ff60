@@ -186,6 +186,116 @@ export type Database = {
         }
         Relationships: []
       }
+      prospect_lists: {
+        Row: {
+          audience: string
+          created_at: string
+          id: string
+          name: string
+          notes: string | null
+          temperature: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          audience?: string
+          created_at?: string
+          id?: string
+          name: string
+          notes?: string | null
+          temperature?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          audience?: string
+          created_at?: string
+          id?: string
+          name?: string
+          notes?: string | null
+          temperature?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      prospects: {
+        Row: {
+          audience: string
+          blurb: string | null
+          company: string | null
+          created_at: string
+          email: string | null
+          id: string
+          linkedin_url: string | null
+          list_id: string | null
+          location: string | null
+          name: string
+          notes: string | null
+          social_url: string | null
+          sources: Json
+          status: string
+          temperature: string
+          title: string | null
+          updated_at: string
+          user_id: string
+          website: string | null
+          why_fits: string | null
+        }
+        Insert: {
+          audience?: string
+          blurb?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          linkedin_url?: string | null
+          list_id?: string | null
+          location?: string | null
+          name: string
+          notes?: string | null
+          social_url?: string | null
+          sources?: Json
+          status?: string
+          temperature?: string
+          title?: string | null
+          updated_at?: string
+          user_id: string
+          website?: string | null
+          why_fits?: string | null
+        }
+        Update: {
+          audience?: string
+          blurb?: string | null
+          company?: string | null
+          created_at?: string
+          email?: string | null
+          id?: string
+          linkedin_url?: string | null
+          list_id?: string | null
+          location?: string | null
+          name?: string
+          notes?: string | null
+          social_url?: string | null
+          sources?: Json
+          status?: string
+          temperature?: string
+          title?: string | null
+          updated_at?: string
+          user_id?: string
+          website?: string | null
+          why_fits?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prospects_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "prospect_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       threads: {
         Row: {
           agent: string

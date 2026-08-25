@@ -11,8 +11,8 @@
  */
 
 @theme inline {
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
-  --font-sans: "Karla", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Prata", ui-serif, Georgia, serif;
+  --font-sans: "Montserrat", ui-sans-serif, system-ui, sans-serif;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -60,69 +60,77 @@
 
 :root {
   --radius: 0.75rem;
-  --background: oklch(0.978 0.011 84);
-  --foreground: oklch(0.245 0.021 47);
-  --paper: oklch(0.995 0.005 90);
-  --ink: oklch(0.245 0.021 47);
-  --card: oklch(0.995 0.005 90);
-  --card-foreground: oklch(0.245 0.021 47);
-  --popover: oklch(0.995 0.005 90);
-  --popover-foreground: oklch(0.245 0.021 47);
-  --primary: oklch(0.556 0.156 33);
-  --primary-foreground: oklch(0.985 0.008 88);
-  --secondary: oklch(0.945 0.017 82);
-  --secondary-foreground: oklch(0.32 0.025 45);
-  --muted: oklch(0.948 0.013 84);
-  --muted-foreground: oklch(0.505 0.024 55);
-  --accent: oklch(0.925 0.032 76);
-  --accent-foreground: oklch(0.32 0.03 45);
-  --destructive: oklch(0.52 0.19 27);
-  --destructive-foreground: oklch(0.985 0.008 88);
-  --border: oklch(0.895 0.016 78);
-  --input: oklch(0.895 0.016 78);
-  --ring: oklch(0.556 0.156 33);
-  --sage: oklch(0.53 0.062 155);
-  --sage-foreground: oklch(0.985 0.008 88);
-  --scout: oklch(0.5 0.08 235);
-  --scout-foreground: oklch(0.985 0.008 88);
-  --quill: oklch(0.556 0.156 33);
-  --quill-foreground: oklch(0.985 0.008 88);
-  --ace: oklch(0.52 0.1 300);
-  --ace-foreground: oklch(0.985 0.008 88);
-  --sidebar: oklch(0.962 0.014 82);
-  --sidebar-foreground: oklch(0.32 0.02 47);
-  --sidebar-border: oklch(0.9 0.016 78);
-  --sidebar-accent: oklch(0.928 0.022 78);
-  --sidebar-accent-foreground: oklch(0.28 0.025 45);
+  --background: #f6f6f6;
+  --foreground: #222226;
+  --paper: #faf4f7;
+  --ink: #222226;
+  --card: #faf4f7;
+  --card-foreground: #222226;
+  --popover: #faf4f7;
+  --popover-foreground: #222226;
+  --primary: #f21882;
+  --primary-foreground: #faf4f7;
+  --secondary: #f2edec;
+  --secondary-foreground: #222226;
+  --muted: #f2edec;
+  --muted-foreground: #6b6b76;
+  --accent: #faf4f7;
+  --accent-foreground: #222226;
+  --destructive: #b3123f;
+  --destructive-foreground: #faf4f7;
+  --border: #e2dcdd;
+  --input: #e2dcdd;
+  --ring: #f21882;
+  --sage: #222226;
+  --sage-foreground: #faf4f7;
+  --scout: #f21882;
+  --scout-foreground: #faf4f7;
+  --quill: #8f1a58;
+  --quill-foreground: #faf4f7;
+  --ace: #6b6b76;
+  --ace-foreground: #faf4f7;
+  --sidebar: #f2edec;
+  --sidebar-foreground: #222226;
+  --sidebar-border: #e2dcdd;
+  --sidebar-accent: #faf4f7;
+  --sidebar-accent-foreground: #222226;
 }
 
 .dark {
-  --background: oklch(0.19 0.014 50);
-  --foreground: oklch(0.955 0.01 85);
-  --paper: oklch(0.235 0.016 50);
-  --ink: oklch(0.955 0.01 85);
-  --card: oklch(0.235 0.016 50);
-  --card-foreground: oklch(0.955 0.01 85);
-  --popover: oklch(0.235 0.016 50);
-  --popover-foreground: oklch(0.955 0.01 85);
-  --primary: oklch(0.66 0.14 34);
-  --primary-foreground: oklch(0.19 0.014 50);
-  --secondary: oklch(0.28 0.018 50);
-  --secondary-foreground: oklch(0.955 0.01 85);
-  --muted: oklch(0.28 0.018 50);
-  --muted-foreground: oklch(0.72 0.018 65);
-  --accent: oklch(0.32 0.03 60);
-  --accent-foreground: oklch(0.955 0.01 85);
-  --destructive: oklch(0.62 0.18 27);
-  --destructive-foreground: oklch(0.985 0.008 88);
-  --border: oklch(1 0 0 / 12%);
-  --input: oklch(1 0 0 / 16%);
-  --ring: oklch(0.66 0.14 34);
-  --sidebar: oklch(0.225 0.016 50);
-  --sidebar-foreground: oklch(0.93 0.01 85);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-accent: oklch(0.3 0.02 55);
-  --sidebar-accent-foreground: oklch(0.955 0.01 85);
+  --background: #222226;
+  --foreground: #f6f6f6;
+  --paper: #2b2b31;
+  --ink: #f6f6f6;
+  --card: #2b2b31;
+  --card-foreground: #f6f6f6;
+  --popover: #2b2b31;
+  --popover-foreground: #f6f6f6;
+  --primary: #f21882;
+  --primary-foreground: #faf4f7;
+  --secondary: #33333a;
+  --secondary-foreground: #f6f6f6;
+  --muted: #33333a;
+  --muted-foreground: #b3b3bd;
+  --accent: #33333a;
+  --accent-foreground: #f6f6f6;
+  --destructive: #ff4d7d;
+  --destructive-foreground: #222226;
+  --border: rgb(255 255 255 / 14%);
+  --input: rgb(255 255 255 / 18%);
+  --ring: #f21882;
+  --sage: #f6f6f6;
+  --sage-foreground: #222226;
+  --scout: #f21882;
+  --scout-foreground: #faf4f7;
+  --quill: #ff77b4;
+  --quill-foreground: #222226;
+  --ace: #b3b3bd;
+  --ace-foreground: #222226;
+  --sidebar: #2b2b31;
+  --sidebar-foreground: #f6f6f6;
+  --sidebar-border: rgb(255 255 255 / 12%);
+  --sidebar-accent: #33333a;
+  --sidebar-accent-foreground: #f6f6f6;
 }
 
 @layer base {
@@ -142,8 +150,8 @@
   h3,
   .font-display {
     font-family: var(--font-display);
-    font-weight: 500;
-    letter-spacing: -0.015em;
+    font-weight: 400;
+    letter-spacing: -0.01em;
   }
 }
 
@@ -162,4 +170,25 @@
     transparent
   );
   height: 1px;
+}
+
+/*
+ * Accessibility floor: no text smaller than 12pt (16px) anywhere in the app.
+ * These sit outside @layer so they win over Tailwind's size utilities.
+ */
+.text-\[10px\],
+.text-\[11px\],
+.text-\[12px\],
+.text-\[13px\],
+.text-\[14px\],
+.text-\[15px\],
+.text-2xs,
+.text-xs,
+.text-sm {
+  font-size: 1rem !important;
+  line-height: 1.5rem !important;
+}
+
+small {
+  font-size: 1rem;
 }
