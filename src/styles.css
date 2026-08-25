@@ -150,8 +150,8 @@
   h3,
   .font-display {
     font-family: var(--font-display);
-    font-weight: 500;
-    letter-spacing: -0.015em;
+    font-weight: 400;
+    letter-spacing: -0.01em;
   }
 }
 
