@@ -55,18 +55,41 @@ function ThreadPage() {
   const agent = isAgentId(thread.data.agent) ? thread.data.agent : "sage";
   const config = AGENTS[agent];
 
+  const handoffs = HANDOFFS[agent];
+
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col">
-      <header className="flex items-center gap-3 border-b border-border px-6 py-4">
+      <header className="flex flex-wrap items-center gap-3 border-b border-border px-6 py-4">
         <span
           className="h-2 w-2 rounded-full"
           style={{ backgroundColor: `var(--${config.colorVar})` }}
         />
-        <div className="min-w-0">
+        <div className="min-w-0 flex-1">
           <p className="truncate font-display text-lg text-foreground">{thread.data.title}</p>
-          <p className="text-xs uppercase tracking-wider text-muted-foreground">
+          <p className="uppercase tracking-wider text-muted-foreground">
             {config.name} · {config.role}
           </p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {handoffs.map((handoff) => (
+            <button
+              key={handoff.agent}
+              type="button"
+              onClick={async () => {
+                try {
+                  const nextId = await startSession(handoff.agent, "chat", handoff.prompt);
+                  await navigate({ to: "/studio/$threadId", params: { threadId: nextId } });
+                } catch (error) {
+                  toast.error(
+                    error instanceof Error ? error.message : "Couldn't hand that off.",
+                  );
+                }
+              }}
+              className="h-9 rounded-full border border-border px-4 text-foreground hover:bg-muted"
+            >
+              {handoff.label}
+            </button>
+          ))}
         </div>
       </header>
 
