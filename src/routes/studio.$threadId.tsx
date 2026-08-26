@@ -1,10 +1,59 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useParams } from "@tanstack/react-router";
+import { createFileRoute, useNavigate, useParams } from "@tanstack/react-router";
 import { useMemo } from "react";
+import { toast } from "sonner";
 
 import { ChatWindow } from "@/components/chat-window";
-import { AGENTS, isAgentId } from "@/lib/heart-sell";
+import { startSession } from "@/lib/handoff";
+import { AGENTS, isAgentId, type AgentId } from "@/lib/heart-sell";
 import { getThread, getThreadMessages, renameThread } from "@/lib/threads";
+
+const HANDOFFS: Record<AgentId, { agent: AgentId; label: string; prompt: string }[]> = {
+  sage: [
+    {
+      agent: "scout",
+      label: "Build a list →",
+      prompt:
+        "My audience audit is done. Read it, tell me which audience to work first, confirm the exact target profile with me, then find real people who match.",
+    },
+  ],
+  scout: [
+    {
+      agent: "quill",
+      label: "Write outreach →",
+      prompt:
+        "I've got people saved from Scout. Look up my saved contacts, help me choose who to message first, and write the CCRA first message.",
+    },
+    {
+      agent: "ace",
+      label: "Prep a call →",
+      prompt:
+        "I have a call coming up with someone from my list. Look them up and build my prep sheet.",
+    },
+  ],
+  quill: [
+    {
+      agent: "ace",
+      label: "Prep the call →",
+      prompt:
+        "They replied and we booked a call. Look up what we have on them and build my prep sheet.",
+    },
+    {
+      agent: "scout",
+      label: "Find more people →",
+      prompt:
+        "I need more people to reach out to. Confirm the target profile with me, then search.",
+    },
+  ],
+  ace: [
+    {
+      agent: "quill",
+      label: "Follow up →",
+      prompt:
+        "The call is done. Help me write the follow-up message in the Heart Sell voice — what I heard, what I'm proposing, and a clear next step.",
+    },
+  ],
+};
 
 export const Route = createFileRoute("/studio/$threadId")({
   head: () => ({
