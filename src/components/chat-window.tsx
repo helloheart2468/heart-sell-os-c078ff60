@@ -16,6 +16,10 @@ import {
   PromptInputTextarea,
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
+import {
+  ProspectResults,
+  type ProspectSearchOutput,
+} from "@/components/prospect-results";
 import { supabase } from "@/integrations/supabase/client";
 import { AGENTS, type AgentId } from "@/lib/heart-sell";
 
