@@ -106,17 +106,51 @@ export function ChatWindow({
           ) : null}
 
           {messages.map((message) => (
-            <Message from={message.role} key={message.id}>
-              <MessageContent
-                className={
-                  message.role === "user"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-transparent p-0 text-foreground"
-                }
-              >
-                <MessageResponse>{textOf(message)}</MessageResponse>
-              </MessageContent>
-            </Message>
+            <div key={message.id} className="space-y-3">
+              {message.role === "assistant"
+                ? message.parts.map((part, index) => {
+                    const type = (part as { type: string }).type;
+                    if (type === "tool-find_prospects") {
+                      const state = (part as { state?: string }).state;
+                      if (state !== "output-available") {
+                        return (
+                          <Shimmer key={index} className="text-sm">
+                            Scout is searching the web for real people…
+                          </Shimmer>
+                        );
+                      }
+                      return (
+                        <ProspectResults
+                          key={index}
+                          output={(part as { output: ProspectSearchOutput }).output}
+                        />
+                      );
+                    }
+                    if (type === "tool-lookup_saved_contacts" || type === "tool-list_my_lists") {
+                      return (
+                        <p key={index} className="text-sm text-muted-foreground">
+                          Checked your saved lists…
+                        </p>
+                      );
+                    }
+                    return null;
+                  })
+                : null}
+
+              {textOf(message).trim().length > 0 ? (
+                <Message from={message.role}>
+                  <MessageContent
+                    className={
+                      message.role === "user"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-transparent p-0 text-foreground"
+                    }
+                  >
+                    <MessageResponse>{textOf(message)}</MessageResponse>
+                  </MessageContent>
+                </Message>
+              ) : null}
+            </div>
           ))}
 
           {status === "submitted" ? (
