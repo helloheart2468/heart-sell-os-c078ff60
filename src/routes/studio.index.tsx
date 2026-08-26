@@ -91,8 +91,8 @@ function StudioHome() {
                 style={{ backgroundColor: `var(--${agent.colorVar})` }}
               />
               <h2 className="mt-4 font-display text-2xl text-foreground">{agent.name}</h2>
-              <p className="text-sm font-medium text-muted-foreground">{agent.role}</p>
-              <p className="mt-3 flex-1 text-sm leading-relaxed text-foreground/80">{agent.tagline}</p>
+              <p className="font-medium text-muted-foreground">{agent.role}</p>
+              <p className="mt-3 flex-1 leading-relaxed text-foreground/80">{agent.tagline}</p>
               <div className="mt-6 flex gap-2">
                 <button
                   type="button"
