@@ -51,7 +51,7 @@ function StudioHome() {
         </p>
 
         {brief.data ? (
-          <p className="mt-6 text-sm text-muted-foreground">
+          <p className="mt-6 text-muted-foreground">
             Your Audience Audit is active and feeding every guide.{" "}
             <Link to="/studio/brief" className="underline underline-offset-4 hover:text-foreground">
               Review or update it
@@ -59,7 +59,7 @@ function StudioHome() {
             .
           </p>
         ) : (
-          <div className="mt-6 rounded-xl border border-dashed border-border p-4 text-sm text-muted-foreground">
+          <div className="mt-6 rounded-xl border border-dashed border-border p-4 text-muted-foreground">
             No Audience Audit yet. Start with Sage —{" "}
             <Link to="/studio/brief" className="underline underline-offset-4 hover:text-foreground">
               fill the brief
@@ -67,6 +67,21 @@ function StudioHome() {
             and Scout, Quill and Ace will read from it automatically.
           </div>
         )}
+
+        <div className="mt-6 flex flex-wrap gap-2">
+          <Link
+            to="/studio/path"
+            className="flex h-10 items-center rounded-full bg-primary px-5 font-medium text-primary-foreground transition-opacity hover:opacity-90"
+          >
+            Run the full path
+          </Link>
+          <Link
+            to="/studio/lists"
+            className="flex h-10 items-center rounded-full border border-border px-5 text-foreground hover:bg-muted"
+          >
+            My lists
+          </Link>
+        </div>
 
         <div className="mt-10 grid gap-5 sm:grid-cols-2">
           {AGENT_LIST.map((agent) => (
