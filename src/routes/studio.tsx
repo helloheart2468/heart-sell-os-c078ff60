@@ -53,10 +53,22 @@ function StudioLayout() {
             New session
           </Link>
           <Link
+            to="/studio/path"
+            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+          >
+            Guided path
+          </Link>
+          <Link
             to="/studio/brief"
             className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
           >
             Audience Audit
+          </Link>
+          <Link
+            to="/studio/lists"
+            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+          >
+            My lists
           </Link>
         </div>
 
