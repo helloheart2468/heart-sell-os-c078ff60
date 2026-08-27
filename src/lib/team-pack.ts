@@ -72,7 +72,9 @@ export function teamPackBlocks(
     const context = [prospect.title, prospect.company, prospect.location].filter(Boolean).join(" · ");
     if (context) blocks.push({ type: "p", text: context });
     if (prospect.why_fits) blocks.push({ type: "bullet", text: `Why they fit: ${prospect.why_fits}` });
-    if (prospect.linkedin_url) blocks.push({ type: "bullet", text: `LinkedIn: ${prospect.linkedin_url}` });
+    for (const link of socialLinks(prospect)) {
+      blocks.push({ type: "bullet", text: `${link.platform}: ${link.url}` });
+    }
     if (prospect.email) blocks.push({ type: "bullet", text: `Email: ${prospect.email}` });
     for (const slot of options.slots) {
       blocks.push({ type: "p", text: slotLabel(slot) });
@@ -102,6 +104,7 @@ export function teamPackCsv(
     "title",
     "company",
     "linkedin_url",
+    "other_profiles",
     "email",
     ...options.slots.map((slot) => slotLabel(slot)),
     "sent_on",
@@ -116,6 +119,10 @@ export function teamPackCsv(
     prospect.title ?? "",
     prospect.company ?? "",
     prospect.linkedin_url ?? "",
+    socialLinks(prospect)
+      .filter((link) => link.platform !== "LinkedIn")
+      .map((link) => `${link.platform}: ${link.url}`)
+      .join(" | "),
     prospect.email ?? "",
     ...options.slots.map((slot) => bodyFor(campaign, slot, personalised, prospect.id)),
     "",
