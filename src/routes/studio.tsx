@@ -1,12 +1,13 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import mark from "@/assets/heart-sell-mark.png";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AGENTS, isAgentId } from "@/lib/heart-sell";
+import { useOffers } from "@/lib/offers";
 import { listThreads } from "@/lib/threads";
 
 const GROUP_ORDER = ["guide", "sage", "scout", "quill", "ace", "other"] as const;
@@ -24,11 +25,18 @@ function StudioLayout() {
     if (!loading && !user) void navigate({ to: "/auth" });
   }, [loading, user, navigate]);
 
+  const { offers, currentId, setCurrent } = useOffers();
+  const [showAllOffers, setShowAllOffers] = useState(false);
+
   const threads = useQuery({
     queryKey: ["threads", user?.id],
     queryFn: listThreads,
     enabled: Boolean(user),
   });
+
+  const visibleThreads = (threads.data ?? []).filter(
+    (thread) => showAllOffers || !currentId || !thread.brief_id || thread.brief_id === currentId,
+  );
 
   if (loading || !user) {
     return (
@@ -48,7 +56,35 @@ function StudioLayout() {
           </Link>
         </div>
 
-        <div className="px-5">
+        <div className="px-5 pb-1">
+          <label
+            htmlFor="offer-switcher"
+            className="text-xs uppercase tracking-wider text-muted-foreground"
+          >
+            Current offer
+          </label>
+          <select
+            id="offer-switcher"
+            value={currentId ?? ""}
+            onChange={(event) => void setCurrent(event.target.value || null)}
+            className="mt-1 h-9 w-full rounded-lg border border-border bg-background px-2 text-sm text-sidebar-foreground"
+          >
+            {offers.length === 0 ? <option value="">No offers yet</option> : null}
+            {offers.map((offer) => (
+              <option key={offer.id} value={offer.id}>
+                {offer.name || "Untitled offer"}
+              </option>
+            ))}
+          </select>
+          <Link
+            to="/studio/offers"
+            className="mt-1 inline-block text-xs text-muted-foreground underline-offset-2 hover:underline"
+          >
+            Manage offers
+          </Link>
+        </div>
+
+        <div className="px-5 pt-3">
           <Link
             to="/studio"
             className="flex h-9 w-full items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground"
@@ -68,6 +104,12 @@ function StudioLayout() {
             Audience Audit
           </Link>
           <Link
+            to="/studio/business"
+            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+          >
+            Business core
+          </Link>
+          <Link
             to="/studio/lists"
             className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
           >
@@ -75,16 +117,25 @@ function StudioLayout() {
           </Link>
         </div>
 
-        <p className="px-5 pb-2 pt-7 text-xs uppercase tracking-wider text-muted-foreground">
-          History
-        </p>
+        <div className="flex items-center justify-between px-5 pb-2 pt-7">
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">History</p>
+          {offers.length > 1 ? (
+            <button
+              type="button"
+              onClick={() => setShowAllOffers((value) => !value)}
+              className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+            >
+              {showAllOffers ? "This offer" : "All offers"}
+            </button>
+          ) : null}
+        </div>
         <nav className="flex-1 space-y-2 overflow-y-auto px-3 pb-4">
-          {(threads.data ?? []).length === 0 ? (
+          {visibleThreads.length === 0 ? (
             <p className="px-3 py-2 text-sm text-muted-foreground">No sessions yet.</p>
           ) : null}
 
           {GROUP_ORDER.map((agentId) => {
-            const group = (threads.data ?? []).filter((thread) =>
+            const group = visibleThreads.filter((thread) =>
               agentId === "other"
                 ? !isAgentId(thread.agent)
                 : thread.agent === agentId,
