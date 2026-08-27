@@ -9,7 +9,12 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AGENTS, isAgentId } from "@/lib/heart-sell";
 import { useOffers } from "@/lib/offers";
-import { listThreads } from "@/lib/threads";
+import {
+  listThreads,
+  renameThread,
+  setThreadArchived,
+  setThreadPinned,
+} from "@/lib/threads";
 
 const GROUP_ORDER = ["guide", "sage", "scout", "quill", "ace", "other"] as const;
 
