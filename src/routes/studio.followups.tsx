@@ -76,7 +76,26 @@ function FollowUpsPage() {
               {allOffers ? "Just this offer" : "Show all offers"}
             </button>
           ) : null}
+          {dueRows.length > 0 ? (
+            <>
+              <button
+                type="button"
+                onClick={() => download("outreach-due.csv", vaCsv(dueRows))}
+                className="h-9 rounded-full border border-border px-4 text-foreground hover:bg-muted"
+              >
+                Export everything due (CSV)
+              </button>
+              <button
+                type="button"
+                onClick={() => openChecklist("Outreach due", dueRows)}
+                className="h-9 rounded-full border border-border px-4 text-primary hover:bg-muted"
+              >
+                Printable checklist
+              </button>
+            </>
+          ) : null}
         </div>
+
 
         {grouped.length === 0 ? (
           <div className="mt-10 rounded-xl border border-dashed border-border p-8 text-center text-muted-foreground">
