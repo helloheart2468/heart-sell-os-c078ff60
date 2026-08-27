@@ -1,4 +1,4 @@
-export type AgentId = "sage" | "scout" | "quill" | "ace";
+export type AgentId = "guide" | "sage" | "scout" | "quill" | "ace";
 
 export type FieldType = "text" | "textarea" | "select";
 
@@ -43,6 +43,25 @@ export const CHANNEL_OPTIONS = [
 ];
 
 export const AGENTS: Record<AgentId, Agent> = {
+  guide: {
+    id: "guide",
+    name: "Heart Sell",
+    role: "Open chat",
+    tagline:
+      "Think out loud about anything in the method — the guide answers, then points you to Sage, Scout, Quill or Ace when it's time to do the work.",
+    chapters: "The whole workbook",
+    colorVar: "primary",
+    structuredTitle: "Open chat",
+    structuredIntro: "",
+    chatOpener: "What are we working on today?",
+    starters: [
+      "Where should I start?",
+      "Explain the Heart Sell method to me",
+      "Who should I be reaching out to this week?",
+      "Review my sales approach",
+    ],
+    fields: [],
+  },
   sage: {
     id: "sage",
     name: "Sage",
@@ -362,7 +381,13 @@ export const AGENT_LIST: Agent[] = [
 ];
 
 export function isAgentId(value: string): value is AgentId {
-  return value === "sage" || value === "scout" || value === "quill" || value === "ace";
+  return (
+    value === "guide" ||
+    value === "sage" ||
+    value === "scout" ||
+    value === "quill" ||
+    value === "ace"
+  );
 }
 
 export function buildStructuredMessage(

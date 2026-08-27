@@ -29,6 +29,7 @@ export const Route = createFileRoute("/studio/")({
 function StudioHome() {
   const navigate = useNavigate();
   const [openAgent, setOpenAgent] = useState<AgentId | null>(null);
+  const [openChat, setOpenChat] = useState("");
   const brief = useQuery({ queryKey: ["brief"], queryFn: getActiveBrief });
 
   const start = async (agent: AgentId, mode: "chat" | "structured", prompt?: string, title?: string) => {
@@ -67,6 +68,36 @@ function StudioHome() {
             and Scout, Quill and Ace will read from it automatically.
           </div>
         )}
+
+        <form
+          className="paper-panel mt-8 p-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const value = openChat.trim();
+            if (!value) return;
+            setOpenChat("");
+            void start("guide", "chat", value, value.slice(0, 90));
+          }}
+        >
+          <label htmlFor="open-chat" className="text-sm text-muted-foreground">
+            Or just start talking — the guide will point you to the right person.
+          </label>
+          <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+            <input
+              id="open-chat"
+              value={openChat}
+              onChange={(event) => setOpenChat(event.target.value)}
+              placeholder="What are we working on today?"
+              className="h-11 flex-1 rounded-full border border-border bg-background px-4 text-foreground outline-none focus:border-foreground/40"
+            />
+            <button
+              type="submit"
+              className="h-11 rounded-full bg-primary px-6 font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              Start open chat
+            </button>
+          </div>
+        </form>
 
         <div className="mt-6 flex flex-wrap gap-2">
           <Link
