@@ -262,7 +262,19 @@ function ListsPage() {
                           .filter(Boolean)
                           .join(" · ")}
                       </p>
+                      {(() => {
+                        const bucket = bucketFor(prospect);
+                        if (!bucket) return null;
+                        return (
+                          <span className="mt-1 inline-block rounded-full bg-muted px-3 py-0.5 text-muted-foreground">
+                            {bucket === "booked"
+                              ? `Call ${formatDue(prospect.call_at)}`
+                              : `${BUCKET_LABELS[bucket]} · ${formatDue(prospect.next_action_at)}`}
+                          </span>
+                        );
+                      })()}
                     </div>
+
                   </div>
                   <button
                     type="button"
