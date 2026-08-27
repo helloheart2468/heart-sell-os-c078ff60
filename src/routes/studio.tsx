@@ -5,11 +5,15 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import mark from "@/assets/heart-sell-mark.png";
+import { AgentNudges } from "@/components/agent-nudges";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AGENTS, isAgentId } from "@/lib/heart-sell";
+import { dueNow } from "@/lib/followups";
 import { useOffers } from "@/lib/offers";
+import { listProspects } from "@/lib/prospects";
 import { listTodos } from "@/lib/todos";
+
 import {
   listThreads,
   renameThread,
