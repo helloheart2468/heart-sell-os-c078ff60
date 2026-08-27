@@ -16,6 +16,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as StudioIndexRouteImport } from './routes/studio.index'
 import { Route as StudioThreadIdRouteImport } from './routes/studio.$threadId'
 import { Route as StudioBusinessRouteImport } from './routes/studio.business'
+import { Route as StudioConversationsRouteImport } from './routes/studio.conversations'
 import { Route as StudioFollowupsRouteImport } from './routes/studio.followups'
 import { Route as StudioListsRouteImport } from './routes/studio.lists'
 import { Route as StudioOffersRouteImport } from './routes/studio.offers'
@@ -23,6 +24,8 @@ import { Route as StudioPathRouteImport } from './routes/studio.path'
 import { Route as StudioTodosRouteImport } from './routes/studio.todos'
 import { Route as StudioBriefIndexRouteImport } from './routes/studio.brief.index'
 import { Route as StudioBriefBriefIdRouteImport } from './routes/studio.brief.$briefId'
+import { Route as StudioCampaignsIndexRouteImport } from './routes/studio.campaigns.index'
+import { Route as StudioCampaignsCampaignIdRouteImport } from './routes/studio.campaigns.$campaignId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -57,6 +60,11 @@ const StudioThreadIdRoute = StudioThreadIdRouteImport.update({
 const StudioBusinessRoute = StudioBusinessRouteImport.update({
   id: '/business',
   path: '/business',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioConversationsRoute = StudioConversationsRouteImport.update({
+  id: '/conversations',
+  path: '/conversations',
   getParentRoute: () => StudioRoute,
 } as any)
 const StudioFollowupsRoute = StudioFollowupsRouteImport.update({
@@ -94,6 +102,17 @@ const StudioBriefBriefIdRoute = StudioBriefBriefIdRouteImport.update({
   path: '/brief/$briefId',
   getParentRoute: () => StudioRoute,
 } as any)
+const StudioCampaignsIndexRoute = StudioCampaignsIndexRouteImport.update({
+  id: '/campaigns/',
+  path: '/campaigns/',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioCampaignsCampaignIdRoute =
+  StudioCampaignsCampaignIdRouteImport.update({
+    id: '/campaigns/$campaignId',
+    path: '/campaigns/$campaignId',
+    getParentRoute: () => StudioRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -102,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/business': typeof StudioBusinessRoute
+  '/studio/conversations': typeof StudioConversationsRoute
   '/studio/followups': typeof StudioFollowupsRoute
   '/studio/lists': typeof StudioListsRoute
   '/studio/offers': typeof StudioOffersRoute
@@ -109,7 +129,9 @@ export interface FileRoutesByFullPath {
   '/studio/todos': typeof StudioTodosRoute
   '/studio/': typeof StudioIndexRoute
   '/studio/brief/$briefId': typeof StudioBriefBriefIdRoute
+  '/studio/campaigns/$campaignId': typeof StudioCampaignsCampaignIdRoute
   '/studio/brief/': typeof StudioBriefIndexRoute
+  '/studio/campaigns/': typeof StudioCampaignsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -117,6 +139,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/business': typeof StudioBusinessRoute
+  '/studio/conversations': typeof StudioConversationsRoute
   '/studio/followups': typeof StudioFollowupsRoute
   '/studio/lists': typeof StudioListsRoute
   '/studio/offers': typeof StudioOffersRoute
@@ -124,7 +147,9 @@ export interface FileRoutesByTo {
   '/studio/todos': typeof StudioTodosRoute
   '/studio': typeof StudioIndexRoute
   '/studio/brief/$briefId': typeof StudioBriefBriefIdRoute
+  '/studio/campaigns/$campaignId': typeof StudioCampaignsCampaignIdRoute
   '/studio/brief': typeof StudioBriefIndexRoute
+  '/studio/campaigns': typeof StudioCampaignsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -134,6 +159,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/business': typeof StudioBusinessRoute
+  '/studio/conversations': typeof StudioConversationsRoute
   '/studio/followups': typeof StudioFollowupsRoute
   '/studio/lists': typeof StudioListsRoute
   '/studio/offers': typeof StudioOffersRoute
@@ -141,7 +167,9 @@ export interface FileRoutesById {
   '/studio/todos': typeof StudioTodosRoute
   '/studio/': typeof StudioIndexRoute
   '/studio/brief/$briefId': typeof StudioBriefBriefIdRoute
+  '/studio/campaigns/$campaignId': typeof StudioCampaignsCampaignIdRoute
   '/studio/brief/': typeof StudioBriefIndexRoute
+  '/studio/campaigns/': typeof StudioCampaignsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -152,6 +180,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/studio/$threadId'
     | '/studio/business'
+    | '/studio/conversations'
     | '/studio/followups'
     | '/studio/lists'
     | '/studio/offers'
@@ -159,7 +188,9 @@ export interface FileRouteTypes {
     | '/studio/todos'
     | '/studio/'
     | '/studio/brief/$briefId'
+    | '/studio/campaigns/$campaignId'
     | '/studio/brief/'
+    | '/studio/campaigns/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -167,6 +198,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/studio/$threadId'
     | '/studio/business'
+    | '/studio/conversations'
     | '/studio/followups'
     | '/studio/lists'
     | '/studio/offers'
@@ -174,7 +206,9 @@ export interface FileRouteTypes {
     | '/studio/todos'
     | '/studio'
     | '/studio/brief/$briefId'
+    | '/studio/campaigns/$campaignId'
     | '/studio/brief'
+    | '/studio/campaigns'
   id:
     | '__root__'
     | '/'
@@ -183,6 +217,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/studio/$threadId'
     | '/studio/business'
+    | '/studio/conversations'
     | '/studio/followups'
     | '/studio/lists'
     | '/studio/offers'
@@ -190,7 +225,9 @@ export interface FileRouteTypes {
     | '/studio/todos'
     | '/studio/'
     | '/studio/brief/$briefId'
+    | '/studio/campaigns/$campaignId'
     | '/studio/brief/'
+    | '/studio/campaigns/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -251,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioBusinessRouteImport
       parentRoute: typeof StudioRoute
     }
+    '/studio/conversations': {
+      id: '/studio/conversations'
+      path: '/conversations'
+      fullPath: '/studio/conversations'
+      preLoaderRoute: typeof StudioConversationsRouteImport
+      parentRoute: typeof StudioRoute
+    }
     '/studio/followups': {
       id: '/studio/followups'
       path: '/followups'
@@ -300,12 +344,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioBriefBriefIdRouteImport
       parentRoute: typeof StudioRoute
     }
+    '/studio/campaigns/': {
+      id: '/studio/campaigns/'
+      path: '/campaigns'
+      fullPath: '/studio/campaigns/'
+      preLoaderRoute: typeof StudioCampaignsIndexRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/campaigns/$campaignId': {
+      id: '/studio/campaigns/$campaignId'
+      path: '/campaigns/$campaignId'
+      fullPath: '/studio/campaigns/$campaignId'
+      preLoaderRoute: typeof StudioCampaignsCampaignIdRouteImport
+      parentRoute: typeof StudioRoute
+    }
   }
 }
 
 interface StudioRouteChildren {
   StudioThreadIdRoute: typeof StudioThreadIdRoute
   StudioBusinessRoute: typeof StudioBusinessRoute
+  StudioConversationsRoute: typeof StudioConversationsRoute
   StudioFollowupsRoute: typeof StudioFollowupsRoute
   StudioListsRoute: typeof StudioListsRoute
   StudioOffersRoute: typeof StudioOffersRoute
@@ -313,12 +372,15 @@ interface StudioRouteChildren {
   StudioTodosRoute: typeof StudioTodosRoute
   StudioIndexRoute: typeof StudioIndexRoute
   StudioBriefBriefIdRoute: typeof StudioBriefBriefIdRoute
+  StudioCampaignsCampaignIdRoute: typeof StudioCampaignsCampaignIdRoute
   StudioBriefIndexRoute: typeof StudioBriefIndexRoute
+  StudioCampaignsIndexRoute: typeof StudioCampaignsIndexRoute
 }
 
 const StudioRouteChildren: StudioRouteChildren = {
   StudioThreadIdRoute: StudioThreadIdRoute,
   StudioBusinessRoute: StudioBusinessRoute,
+  StudioConversationsRoute: StudioConversationsRoute,
   StudioFollowupsRoute: StudioFollowupsRoute,
   StudioListsRoute: StudioListsRoute,
   StudioOffersRoute: StudioOffersRoute,
@@ -326,7 +388,9 @@ const StudioRouteChildren: StudioRouteChildren = {
   StudioTodosRoute: StudioTodosRoute,
   StudioIndexRoute: StudioIndexRoute,
   StudioBriefBriefIdRoute: StudioBriefBriefIdRoute,
+  StudioCampaignsCampaignIdRoute: StudioCampaignsCampaignIdRoute,
   StudioBriefIndexRoute: StudioBriefIndexRoute,
+  StudioCampaignsIndexRoute: StudioCampaignsIndexRoute,
 }
 
 const StudioRouteWithChildren =

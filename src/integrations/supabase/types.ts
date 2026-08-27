@@ -163,6 +163,117 @@ export type Database = {
         }
         Relationships: []
       }
+      campaign_messages: {
+        Row: {
+          body: string
+          campaign_id: string
+          created_at: string
+          id: string
+          is_approved: boolean
+          prospect_id: string
+          slot: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body?: string
+          campaign_id: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          prospect_id: string
+          slot: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          campaign_id?: string
+          created_at?: string
+          id?: string
+          is_approved?: boolean
+          prospect_id?: string
+          slot?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_messages_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaign_messages_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "prospects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      campaigns: {
+        Row: {
+          brief_id: string | null
+          channel: string
+          connection_note: string | null
+          created_at: string
+          id: string
+          list_id: string | null
+          message_1: string | null
+          message_2: string | null
+          name: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brief_id?: string | null
+          channel?: string
+          connection_note?: string | null
+          created_at?: string
+          id?: string
+          list_id?: string | null
+          message_1?: string | null
+          message_2?: string | null
+          name: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brief_id?: string | null
+          channel?: string
+          connection_note?: string | null
+          created_at?: string
+          id?: string
+          list_id?: string | null
+          message_1?: string | null
+          message_2?: string | null
+          name?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaigns_brief_id_fkey"
+            columns: ["brief_id"]
+            isOneToOne: false
+            referencedRelation: "audience_briefs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "campaigns_list_id_fkey"
+            columns: ["list_id"]
+            isOneToOne: false
+            referencedRelation: "prospect_lists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       messages: {
         Row: {
           client_message_id: string | null
