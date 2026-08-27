@@ -10,6 +10,8 @@ export type ThreadRow = {
   title: string;
   updated_at: string;
   brief_id: string | null;
+  is_pinned: boolean;
+  is_archived: boolean;
 };
 
 export type MessageRow = {
