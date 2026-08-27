@@ -1,7 +1,7 @@
 import { bodyFor, SLOTS, type Campaign, type CampaignSlot } from "@/lib/campaigns";
 import type { DocBlock } from "@/lib/documents";
 import { toCsv } from "@/lib/exports";
-import type { Prospect } from "@/lib/prospects";
+import { socialLinks, type Prospect } from "@/lib/prospects";
 
 export type TeamPackOptions = {
   assignee: string;
