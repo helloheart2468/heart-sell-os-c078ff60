@@ -109,7 +109,7 @@ export type NewProspect = {
 };
 
 const PROSPECT_COLUMNS =
-  "id, brief_id, list_id, name, title, company, blurb, location, linkedin_url, social_url, website, email, audience, temperature, status, why_fits, notes, created_at, follow_up_state, sequence_step, last_touch_at, next_action_at, next_action_kind, call_at, campaign_id, campaign_slot, source, enrichment_state";
+  "id, brief_id, list_id, name, title, company, blurb, location, linkedin_url, social_url, socials, website, email, audience, temperature, status, why_fits, notes, created_at, follow_up_state, sequence_step, last_touch_at, next_action_at, next_action_kind, call_at, campaign_id, campaign_slot, source, enrichment_state";
 
 
 
