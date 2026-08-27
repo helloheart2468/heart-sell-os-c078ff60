@@ -348,7 +348,10 @@ function StudioLayout() {
         </button>
       </aside>
 
+      <AgentNudges enabled={Boolean(user)} briefId={currentId} />
+
       <div className="flex min-w-0 flex-1 flex-col">
+
         <Outlet />
       </div>
     </div>
