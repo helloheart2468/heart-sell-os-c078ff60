@@ -11,6 +11,7 @@ import {
   prospectSummary,
   saveProspects,
   type NewProspect,
+  socialLinks,
 } from "@/lib/prospects";
 
 export type ProspectSearchOutput = {

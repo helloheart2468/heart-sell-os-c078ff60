@@ -34,6 +34,7 @@ import {
   prospectSummary,
   updateProspect,
   type Prospect,
+  socialLinks,
 } from "@/lib/prospects";
 
 export const Route = createFileRoute("/studio/lists")({
