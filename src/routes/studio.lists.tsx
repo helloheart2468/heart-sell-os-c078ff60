@@ -250,6 +250,7 @@ function ListsPage() {
                       .filter(Boolean)
                       .join(" · ")}
                   </p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <select
