@@ -237,8 +237,7 @@ export function prospectSummary(prospect: Prospect | NewProspect): string {
     prospect.location ? `Location: ${prospect.location}` : "",
     prospect.blurb ? `About them: ${prospect.blurb}` : "",
     prospect.why_fits ? `Why they fit: ${prospect.why_fits}` : "",
-    prospect.linkedin_url ? `LinkedIn: ${prospect.linkedin_url}` : "",
-    prospect.social_url ? `Social: ${prospect.social_url}` : "",
+    ...socialLinks(prospect).map((link) => `${link.platform}: ${link.url}`),
     prospect.website ? `Website: ${prospect.website}` : "",
     prospect.email ? `Email: ${prospect.email}` : "",
   ].filter(Boolean);
