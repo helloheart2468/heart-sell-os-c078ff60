@@ -84,6 +84,7 @@ function CampaignDetail() {
 
   const rows = prospects.data ?? [];
   const data = campaign.data;
+  const missingProfile = rows.filter((prospect) => socialLinks(prospect).length === 0);
   const slots = slotsFor(data?.channel ?? "linkedin", data?.warmth ?? "cold");
   const missingLinkedIn = rows.filter((prospect) => !(prospect.linkedin_url ?? "").trim());
 
@@ -177,9 +178,13 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
         <p className="mt-2 text-muted-foreground">
           {channelLabel(data.channel)} · {data.warmth === "warm" ? "warm/hot" : "cold"} ·{" "}
           {rows.length} people
-          {missingLinkedIn.length > 0
-            ? ` · ${missingLinkedIn.length} missing a LinkedIn URL`
-            : ""}
+          {isDm(data.channel)
+            ? missingProfile.length > 0
+              ? ` · ${missingProfile.length} missing a profile link`
+              : ""
+            : missingLinkedIn.length > 0
+              ? ` · ${missingLinkedIn.length} missing a LinkedIn URL`
+              : ""}
         </p>
 
         <section className="mt-8 space-y-4">
@@ -234,16 +239,18 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-display text-2xl text-foreground">Who's in it</h2>
             <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowPack(false);
-                  setShowExport((value) => !value);
-                }}
-                className="h-10 rounded-full bg-primary px-5 font-medium text-primary-foreground"
-              >
-                Export to Dripify
-              </button>
+              {isDm(data.channel) ? null : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPack(false);
+                    setShowExport((value) => !value);
+                  }}
+                  className="h-10 rounded-full bg-primary px-5 font-medium text-primary-foreground"
+                >
+                  Export to Dripify
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => {
