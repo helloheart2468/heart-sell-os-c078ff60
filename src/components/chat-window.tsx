@@ -17,6 +17,10 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import {
+  ActionSuggestions,
+  type ActionSuggestionsOutput,
+} from "@/components/action-suggestions";
+import {
   ProspectResults,
   type ProspectSearchOutput,
 } from "@/components/prospect-results";
