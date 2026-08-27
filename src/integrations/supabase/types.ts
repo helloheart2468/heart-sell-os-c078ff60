@@ -397,6 +397,8 @@ export type Database = {
           blurb: string | null
           brief_id: string | null
           call_at: string | null
+          campaign_id: string | null
+          campaign_slot: string | null
           company: string | null
           created_at: string
           email: string | null
@@ -426,6 +428,8 @@ export type Database = {
           blurb?: string | null
           brief_id?: string | null
           call_at?: string | null
+          campaign_id?: string | null
+          campaign_slot?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
@@ -455,6 +459,8 @@ export type Database = {
           blurb?: string | null
           brief_id?: string | null
           call_at?: string | null
+          campaign_id?: string | null
+          campaign_slot?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
@@ -485,6 +491,13 @@ export type Database = {
             columns: ["brief_id"]
             isOneToOne: false
             referencedRelation: "audience_briefs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "prospects_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
             referencedColumns: ["id"]
           },
           {
@@ -614,6 +627,8 @@ export type Database = {
         Row: {
           body_excerpt: string | null
           brief_id: string | null
+          campaign_id: string | null
+          campaign_slot: string | null
           channel: string | null
           created_at: string
           id: string
@@ -628,6 +643,8 @@ export type Database = {
         Insert: {
           body_excerpt?: string | null
           brief_id?: string | null
+          campaign_id?: string | null
+          campaign_slot?: string | null
           channel?: string | null
           created_at?: string
           id?: string
@@ -642,6 +659,8 @@ export type Database = {
         Update: {
           body_excerpt?: string | null
           brief_id?: string | null
+          campaign_id?: string | null
+          campaign_slot?: string | null
           channel?: string | null
           created_at?: string
           id?: string
@@ -659,6 +678,13 @@ export type Database = {
             columns: ["brief_id"]
             isOneToOne: false
             referencedRelation: "audience_briefs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "touches_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
             referencedColumns: ["id"]
           },
           {

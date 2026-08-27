@@ -43,6 +43,13 @@
       "when": 1787828955559,
       "tag": "0005_create_campaigns",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1787829312854,
+      "tag": "0006_link_touches_to_campaigns",
+      "breakpoints": true
     }
   ]
 }
