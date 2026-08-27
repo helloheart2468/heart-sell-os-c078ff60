@@ -47,7 +47,9 @@ function BusinessPage() {
         </p>
         <h1 className="mt-3 font-display text-4xl text-foreground">Business core</h1>
         <p className="mt-3 text-muted-foreground">
-          Your expertise, the problems you solve, and your story. Write it once — every offer's
+          Your expertise, the problems you solve, your story, and how you sound — your greeting,
+          your sign-off, your booking link and your style, so every draft comes out in your voice.
+          Write it once — every offer's
           Audience Audit builds on top of it. Offer-specific things (broken phone, ICP, partners,
           ecosystems, pricing) live in{" "}
           <Link to="/studio/offers" className="text-primary underline-offset-2 hover:underline">

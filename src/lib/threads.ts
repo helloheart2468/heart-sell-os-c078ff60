@@ -134,6 +134,10 @@ export type BusinessCore = {
   problems_solved?: string | null;
   unfair_advantage?: string | null;
   story_notes?: string | null;
+  greeting?: string | null;
+  sign_off?: string | null;
+  booking_link?: string | null;
+  communication_style?: string | null;
 };
 
 async function currentUserId() {
@@ -146,7 +150,9 @@ async function currentUserId() {
 export async function getBusinessCore(): Promise<BusinessCore | null> {
   const { data, error } = await supabase
     .from("business_profile")
-    .select("id, business_summary, problems_solved, unfair_advantage, story_notes")
+    .select(
+      "id, business_summary, problems_solved, unfair_advantage, story_notes, greeting, sign_off, booking_link, communication_style",
+    )
     .maybeSingle();
   if (error) throw error;
   return (data as BusinessCore) ?? null;

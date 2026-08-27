@@ -68,6 +68,35 @@ export const BUSINESS_FIELDS: StructuredField[] = [
         type: "textarea",
         placeholder: "Raw material for your 3-5 minute story in Step 5 of the conversation.",
       },
+      {
+        name: "greeting",
+        label: "How you open a message",
+        type: "text",
+        help: "Your real greeting, exactly as you'd type it. Every draft will use it.",
+        placeholder: "Hi {first_name}, — or Hey {first_name}!",
+      },
+      {
+        name: "sign_off",
+        label: "How you sign off",
+        type: "textarea",
+        help: "Sign-off plus your name, and anything you always add underneath.",
+        placeholder: "Warmly,\nDora",
+      },
+      {
+        name: "booking_link",
+        label: "Your booking link",
+        type: "text",
+        help: "Used whenever a message or script offers a call. Left out if empty.",
+        placeholder: "https://calendly.com/you/30min",
+      },
+      {
+        name: "communication_style",
+        label: "How you sound",
+        type: "textarea",
+        help: "Warm or direct, long or short, emoji or none, words you'd never use. Drafts will match it.",
+        placeholder:
+          "Warm and plain-spoken. Short paragraphs. No corporate language, no 'just checking in', no exclamation marks.",
+      },
 ];
 
 export const AGENTS: Record<AgentId, Agent> = {

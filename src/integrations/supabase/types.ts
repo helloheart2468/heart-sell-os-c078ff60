@@ -132,30 +132,42 @@ export type Database = {
       }
       business_profile: {
         Row: {
+          booking_link: string | null
           business_summary: string | null
+          communication_style: string | null
           created_at: string
+          greeting: string | null
           id: string
           problems_solved: string | null
+          sign_off: string | null
           story_notes: string | null
           unfair_advantage: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          booking_link?: string | null
           business_summary?: string | null
+          communication_style?: string | null
           created_at?: string
+          greeting?: string | null
           id?: string
           problems_solved?: string | null
+          sign_off?: string | null
           story_notes?: string | null
           unfair_advantage?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          booking_link?: string | null
           business_summary?: string | null
+          communication_style?: string | null
           created_at?: string
+          greeting?: string | null
           id?: string
           problems_solved?: string | null
+          sign_off?: string | null
           story_notes?: string | null
           unfair_advantage?: string | null
           updated_at?: string

@@ -87,7 +87,9 @@ export const generatePlaybook = createServerFn({ method: "POST" })
 
     const { data: business } = await supabase
       .from("business_profile")
-      .select("business_summary, problems_solved, unfair_advantage, story_notes")
+      .select(
+        "business_summary, problems_solved, unfair_advantage, story_notes, greeting, sign_off, booking_link, communication_style",
+      )
       .maybeSingle();
 
     let briefId = data.briefId ?? null;
