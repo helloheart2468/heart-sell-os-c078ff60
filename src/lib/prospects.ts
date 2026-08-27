@@ -36,6 +36,9 @@ export type Prospect = {
   next_action_at: string | null;
   next_action_kind: string | null;
   call_at: string | null;
+  campaign_id: string | null;
+  campaign_slot: string | null;
+
 };
 
 
