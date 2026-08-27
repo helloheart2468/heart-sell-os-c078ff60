@@ -30,7 +30,14 @@ export type Prospect = {
   why_fits: string | null;
   notes: string | null;
   created_at: string;
+  follow_up_state: string;
+  sequence_step: number;
+  last_touch_at: string | null;
+  next_action_at: string | null;
+  next_action_kind: string | null;
+  call_at: string | null;
 };
+
 
 export type NewProspect = {
   name: string;
