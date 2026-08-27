@@ -147,7 +147,14 @@ export async function searchProspects(input: {
   return result;
 }
 
-export type ResearchHook = { text: string; source?: string };
+export type HookConfidence = "high" | "medium" | "low";
+
+export type ResearchHook = {
+  text: string;
+  source?: string;
+  confidence?: HookConfidence;
+  confidence_reason?: string;
+};
 
 export type ProspectResearchResult = {
   person: string;
