@@ -21,6 +21,10 @@ import {
   type ActionSuggestionsOutput,
 } from "@/components/action-suggestions";
 import {
+  ResearchHooks,
+  type ProspectResearchOutput,
+} from "@/components/research-hooks";
+import {
   ProspectResults,
   type ProspectSearchOutput,
 } from "@/components/prospect-results";
@@ -134,6 +138,23 @@ export function ChatWindow({
                           key={index}
                           output={(part as { output: ProspectSearchOutput }).output}
                           briefId={briefId ?? null}
+                        />
+                      );
+                    }
+                    if (type === "tool-research_person") {
+                      const state = (part as { state?: string }).state;
+                      if (state !== "output-available") {
+                        return (
+                          <Shimmer key={index} className="text-sm">
+                            Looking them up on the web…
+                          </Shimmer>
+                        );
+                      }
+                      return (
+                        <ResearchHooks
+                          key={index}
+                          output={(part as { output: ProspectResearchOutput }).output}
+                          onUse={(text) => submit(text)}
                         />
                       );
                     }

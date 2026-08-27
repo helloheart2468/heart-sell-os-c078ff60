@@ -11,7 +11,7 @@ import { z } from "zod";
 
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { isAgentId, type AgentId } from "@/lib/heart-sell";
-import { searchProspects } from "@/lib/perplexity.server";
+import { researchProspect, searchProspects } from "@/lib/perplexity.server";
 import { buildSystemPrompt } from "@/lib/prompts.server";
 
 type ChatBody = {
@@ -27,7 +27,12 @@ function json(body: unknown, status: number) {
   });
 }
 
-function buildTools(agent: AgentId, supabase: SupabaseClient, briefId: string | null) {
+function buildTools(
+  agent: AgentId,
+  supabase: SupabaseClient,
+  briefId: string | null,
+  founderContext: string,
+) {
   const lookupSavedContacts = tool({
     description:
       "Look up people the founder has already saved to their Heart Sell lists, by name, company or keyword. Use this before asking the founder to re-type details about a contact.",
@@ -98,11 +103,53 @@ function buildTools(agent: AgentId, supabase: SupabaseClient, briefId: string | 
     execute: async ({ actions }) => ({ actions: actions.slice(0, 7) }),
   });
 
+  const researchPerson = tool({
+    description:
+      "Research ONE named person on the live web to find a genuine commonality, a specific compliment, and recent signals — each with a source link. Use this when the founder does not already have a real hook and says they'd like you to look, or offers no hook when asked. Never invent hooks; only use what this returns or what the founder tells you.",
+    inputSchema: z.object({
+      name: z.string().describe("Full name of the person."),
+      company: z.string().optional(),
+      title: z.string().optional(),
+      location: z.string().optional(),
+      link: z.string().optional().describe("LinkedIn, social or website URL if known."),
+      prospect_id: z
+        .string()
+        .optional()
+        .describe("The saved prospect id from lookup_saved_contacts, if they are already saved."),
+    }),
+    execute: async ({ name, company, title, location, link, prospect_id }) => {
+      try {
+        const result = await researchProspect({
+          name,
+          ...(company ? { company } : {}),
+          ...(title ? { title } : {}),
+          ...(location ? { location } : {}),
+          ...(link ? { link } : {}),
+          ...(founderContext ? { founderContext } : {}),
+        });
+        return { ...result, prospect_id: prospect_id ?? null };
+      } catch (error) {
+        return {
+          person: name,
+          error: error instanceof Error ? error.message : "Research failed.",
+          commonalities: [],
+          compliments: [],
+          recent_signals: [],
+          citations: [],
+        };
+      }
+    },
+  });
+
   const base = {
     lookup_saved_contacts: lookupSavedContacts,
     list_my_lists: listMyLists,
     suggest_actions: suggestActions,
   };
+
+  if (agent === "quill" || agent === "ace" || agent === "guide") {
+    return { ...base, research_person: researchPerson };
+  }
 
   if (agent !== "scout") return base;
 
@@ -244,7 +291,18 @@ export const Route = createFileRoute("/api/chat")({
               ((offers ?? []) as { name?: string }[]).map((offer) => offer.name ?? ""),
             ),
             messages: await convertToModelMessages(messages),
-            tools: buildTools(agent, supabase, briefId),
+            tools: buildTools(
+              agent,
+              supabase,
+              briefId,
+              [
+                (business as Record<string, string> | null)?.["business_summary"] ?? "",
+                (business as Record<string, string> | null)?.["unfair_advantage"] ?? "",
+                (brief as Record<string, string> | null)?.["icp_description"] ?? "",
+              ]
+                .filter(Boolean)
+                .join(" | "),
+            ),
             stopWhen: stepCountIs(50),
           });
 
