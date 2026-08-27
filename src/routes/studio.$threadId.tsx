@@ -5,6 +5,7 @@ import { toast } from "sonner";
 
 import { ChatWindow } from "@/components/chat-window";
 import { startSession } from "@/lib/handoff";
+import { useOffers } from "@/lib/offers";
 import { AGENTS, isAgentId, type AgentId } from "@/lib/heart-sell";
 import { getThread, getThreadMessages, renameThread } from "@/lib/threads";
 
@@ -119,6 +120,8 @@ function ThreadPage() {
   const config = AGENTS[agent];
 
   const handoffs = HANDOFFS[agent];
+  const offerName =
+    offers.find((offer) => offer.id === thread.data?.brief_id)?.name ?? null;
 
   return (
     <div className="flex h-full min-h-0 flex-1 flex-col">
@@ -131,6 +134,7 @@ function ThreadPage() {
           <p className="truncate font-display text-lg text-foreground">{thread.data.title}</p>
           <p className="uppercase tracking-wider text-muted-foreground">
             {config.name} · {config.role}
+            {offerName ? ` · ${offerName}` : ""}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -140,7 +144,13 @@ function ThreadPage() {
               type="button"
               onClick={async () => {
                 try {
-                  const nextId = await startSession(handoff.agent, "chat", handoff.prompt);
+                  const nextId = await startSession(
+                    handoff.agent,
+                    "chat",
+                    handoff.prompt,
+                    undefined,
+                    thread.data?.brief_id ?? undefined,
+                  );
                   await navigate({ to: "/studio/$threadId", params: { threadId: nextId } });
                 } catch (error) {
                   toast.error(
@@ -160,6 +170,7 @@ function ThreadPage() {
         key={threadId}
         threadId={threadId}
         agent={agent}
+        briefId={thread.data.brief_id}
         initialMessages={history.data ?? []}
         {...(pending ? { autoSend: pending } : {})}
         onFirstMessage={(text) => {
