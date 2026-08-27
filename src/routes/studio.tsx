@@ -5,11 +5,15 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import mark from "@/assets/heart-sell-mark.png";
+import { AgentNudges } from "@/components/agent-nudges";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AGENTS, isAgentId } from "@/lib/heart-sell";
+import { dueNow } from "@/lib/followups";
 import { useOffers } from "@/lib/offers";
+import { listProspects } from "@/lib/prospects";
 import { listTodos } from "@/lib/todos";
+
 import {
   listThreads,
   renameThread,
@@ -50,6 +54,14 @@ function StudioLayout() {
     enabled: Boolean(user),
   });
   const openTodoCount = (todos.data ?? []).filter((todo) => !todo.is_done).length;
+
+  const followUps = useQuery({
+    queryKey: ["prospects", "followups", currentId ?? "all"],
+    queryFn: () => listProspects(undefined, currentId),
+    enabled: Boolean(user),
+  });
+  const dueCount = dueNow(followUps.data ?? []).length;
+
 
   const mutate = async (action: Promise<unknown>) => {
     try {
@@ -152,6 +164,17 @@ function StudioLayout() {
             My lists
           </Link>
           <Link
+            to="/studio/followups"
+            className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+          >
+            Follow-ups
+            {dueCount > 0 ? (
+              <span className="rounded-full bg-primary px-2 text-sm text-primary-foreground">
+                {dueCount}
+              </span>
+            ) : null}
+          </Link>
+          <Link
             to="/studio/todos"
             className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
           >
@@ -162,6 +185,7 @@ function StudioLayout() {
               </span>
             ) : null}
           </Link>
+
         </div>
 
         <div className="flex items-center justify-between px-5 pb-2 pt-7">
@@ -324,7 +348,10 @@ function StudioLayout() {
         </button>
       </aside>
 
+      <AgentNudges enabled={Boolean(user)} briefId={currentId} />
+
       <div className="flex min-w-0 flex-1 flex-col">
+
         <Outlet />
       </div>
     </div>

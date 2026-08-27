@@ -9,8 +9,12 @@ import {
   BulkResearchResults,
   type BulkResearchEntry,
 } from "@/components/bulk-research";
+import { FollowUpStrip } from "@/components/followup-strip";
 import { startSession } from "@/lib/handoff";
+
+import { BUCKET_LABELS, bucketFor, formatDue } from "@/lib/followups";
 import { useOffers } from "@/lib/offers";
+
 import { researchProspectsBulk } from "@/lib/research.functions";
 import {
   deleteProspect,
@@ -260,7 +264,19 @@ function ListsPage() {
                           .filter(Boolean)
                           .join(" · ")}
                       </p>
+                      {(() => {
+                        const bucket = bucketFor(prospect);
+                        if (!bucket) return null;
+                        return (
+                          <span className="mt-1 inline-block rounded-full bg-muted px-3 py-0.5 text-muted-foreground">
+                            {bucket === "booked"
+                              ? `Call ${formatDue(prospect.call_at)}`
+                              : `${BUCKET_LABELS[bucket]} · ${formatDue(prospect.next_action_at)}`}
+                          </span>
+                        );
+                      })()}
                     </div>
+
                   </div>
                   <button
                     type="button"
@@ -280,12 +296,14 @@ function ListsPage() {
 
                 {isExpanded ? (
                   <div id={`prospect-body-${prospect.id}`} className="mt-4 space-y-3 border-t border-border pt-4">
+                    <FollowUpStrip prospect={prospect} briefId={currentId} onChange={refresh} />
                     {prospect.blurb ? (
                       <p className="text-foreground/80">{prospect.blurb}</p>
                     ) : null}
                     {prospect.why_fits ? (
                       <p className="text-muted-foreground">Why they fit: {prospect.why_fits}</p>
                     ) : null}
+
 
                     <div className="flex flex-wrap gap-4">
                       {[
