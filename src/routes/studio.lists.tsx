@@ -238,8 +238,18 @@ function ListsPage() {
               ? "Researching…"
               : `Research commonality & compliment${selected.size ? ` (${selected.size})` : ""}`}
           </button>
+          <button
+            type="button"
+            onClick={() => void enrich()}
+            disabled={selected.size === 0 || enriching}
+            className="inline-flex h-9 items-center gap-2 rounded-full border border-border px-4 text-foreground hover:bg-muted disabled:opacity-40"
+          >
+            <Wand2 className="h-4 w-4" />
+            {enriching ? "Looking them up…" : "Fill in missing details"}
+          </button>
           <span className="text-muted-foreground">Up to 10 at a time.</span>
         </div>
+
 
         <BulkResearchResults entries={entries} onDraft={(id, approved) => void draftWithHooks(id, approved)} />
 
