@@ -184,6 +184,10 @@ export const Route = createFileRoute("/api/chat")({
           ? await supabase.from("audience_briefs").select("*").eq("id", briefId).maybeSingle()
           : { data: null };
 
+        if (!threadBriefId && briefId) {
+          await supabase.from("threads").update({ brief_id: briefId }).eq("id", threadId);
+        }
+
         const { data: business } = await supabase
           .from("business_profile")
           .select("business_summary, problems_solved, unfair_advantage, story_notes")
