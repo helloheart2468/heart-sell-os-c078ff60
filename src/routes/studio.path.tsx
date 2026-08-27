@@ -34,7 +34,7 @@ function GuidedPath() {
     queryFn: () => listProspects(undefined, currentId),
   });
 
-  const hasBrief = Boolean(currentOffer?.icp_description || currentOffer?.broken_phone);
+  const hasBrief = Boolean(currentOffer?.["icp_description"] || currentOffer?.["broken_phone"]);
   const hasProspects = (prospects.data?.length ?? 0) > 0;
 
   const go = async (

@@ -138,14 +138,14 @@ export async function saveBusinessCore(values: Record<string, string>) {
   if (existing?.id) {
     const { error } = await supabase
       .from("business_profile")
-      .update(values)
+      .update(values as Record<string, never>)
       .eq("id", existing.id);
     if (error) throw error;
     return existing.id;
   }
   const { data, error } = await supabase
     .from("business_profile")
-    .insert({ ...values, user_id: userId })
+    .insert({ ...(values as Record<string, never>), user_id: userId })
     .select("id")
     .single();
   if (error) throw error;

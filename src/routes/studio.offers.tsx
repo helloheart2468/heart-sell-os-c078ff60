@@ -93,8 +93,8 @@ function OffersPage() {
                   </span>
                 </div>
 
-                {offer.icp_description ? (
-                  <p className="mt-2 line-clamp-2 text-foreground/80">{offer.icp_description}</p>
+                {offer["icp_description"] ? (
+                  <p className="mt-2 line-clamp-2 text-foreground/80">{offer["icp_description"]}</p>
                 ) : (
                   <p className="mt-2 text-muted-foreground">Audit not started yet.</p>
                 )}
