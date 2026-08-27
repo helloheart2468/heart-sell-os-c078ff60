@@ -164,6 +164,19 @@ function StudioLayout() {
             My lists
           </Link>
           <Link
+            to="/studio/campaigns"
+            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+          >
+            Campaigns
+          </Link>
+          <Link
+            to="/studio/conversations"
+            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+          >
+            Conversations
+          </Link>
+
+          <Link
             to="/studio/followups"
             className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
           >
