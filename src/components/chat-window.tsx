@@ -133,6 +133,19 @@ export function ChatWindow({
                         />
                       );
                     }
+                    if (type === "tool-suggest_actions") {
+                      const state = (part as { state?: string }).state;
+                      if (state !== "output-available") return null;
+                      return (
+                        <ActionSuggestions
+                          key={index}
+                          output={(part as { output: ActionSuggestionsOutput }).output}
+                          agent={config.name}
+                          briefId={briefId ?? null}
+                          threadId={threadId}
+                        />
+                      );
+                    }
                     if (type === "tool-lookup_saved_contacts" || type === "tool-list_my_lists") {
                       return (
                         <p key={index} className="text-sm text-muted-foreground">
