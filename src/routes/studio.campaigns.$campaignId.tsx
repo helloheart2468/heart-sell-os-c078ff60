@@ -12,6 +12,9 @@ import {
   listCampaignMessages,
   saveCampaignMessage,
   SLOTS,
+  slotsFor,
+  channelLabel,
+  isDm,
   updateCampaign,
   type CampaignSlot,
 } from "@/lib/campaigns";
@@ -181,7 +184,7 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
 
         <section className="mt-8 space-y-4">
           <h2 className="font-display text-2xl text-foreground">The sequence</h2>
-          {SLOTS.map((meta) => {
+          {slots.map((meta) => {
             const value = data[meta.slot] ?? "";
             return (
               <div key={meta.slot} className="paper-panel p-5">
@@ -277,7 +280,7 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
                 For blowing through outreach in a spurt, or handing to a VA.
               </p>
               <div className="mt-3 flex flex-wrap gap-3">
-                {SLOTS.map((meta) => (
+                {slots.map((meta) => (
                   <div key={meta.slot} className="flex gap-2">
                     <button
                       type="button"
@@ -322,7 +325,7 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
                 </div>
 
                 <div className="mt-3 space-y-2">
-                  {SLOTS.map((meta) => {
+                  {slots.map((meta) => {
                     const isEditing =
                       editing?.prospectId === prospect.id && editing.slot === meta.slot;
                     const custom = personalised.get(`${prospect.id}:${meta.slot}`);
