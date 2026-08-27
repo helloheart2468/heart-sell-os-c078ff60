@@ -51,6 +51,14 @@ function StudioLayout() {
   });
   const openTodoCount = (todos.data ?? []).filter((todo) => !todo.is_done).length;
 
+  const followUps = useQuery({
+    queryKey: ["prospects", "followups", currentId ?? "all"],
+    queryFn: () => listProspects(undefined, currentId),
+    enabled: Boolean(user),
+  });
+  const dueCount = dueNow(followUps.data ?? []).length;
+
+
   const mutate = async (action: Promise<unknown>) => {
     try {
       await action;
