@@ -239,18 +239,17 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
               >
                 Send-it-yourself pack
               </button>
+              <button
+                type="button"
+                onClick={() => setShowTeamPack(true)}
+                className="h-10 rounded-full border border-border px-5 text-foreground hover:bg-muted"
+              >
+                Prepare this for my team
+              </button>
             </div>
           </div>
 
           {showExport ? (
-            <button
-              type="button"
-              onClick={() => setShowTeamPack(true)}
-              className="h-10 rounded-full border border-border px-5 text-foreground hover:bg-muted"
-            >
-              Prepare this for my team
-            </button>
-
             <DripifyWizard
               campaign={data}
               prospects={rows}
