@@ -43,6 +43,13 @@ function StudioLayout() {
     enabled: Boolean(user),
   });
 
+  const todos = useQuery({
+    queryKey: ["todos", currentId ?? "all"],
+    queryFn: () => listTodos(currentId),
+    enabled: Boolean(user),
+  });
+  const openTodoCount = (todos.data ?? []).filter((todo) => !todo.is_done).length;
+
   const mutate = async (action: Promise<unknown>) => {
     try {
       await action;
