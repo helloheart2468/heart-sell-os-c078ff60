@@ -4,10 +4,13 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import {
+  CHANNELS,
+  channelLabel,
   createCampaign,
   deleteCampaign,
   listCampaigns,
   PURPOSES,
+  WARMTHS,
   type CampaignPurpose,
 } from "@/lib/campaigns";
 import { useOffers } from "@/lib/offers";
