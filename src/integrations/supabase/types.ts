@@ -68,11 +68,13 @@ export type Database = {
           icp_titles: string | null
           id: string
           is_active: boolean
+          is_archived: boolean
           name: string
           offer_summary: string | null
           pain_points: string | null
           partner_types: string | null
           problems_solved: string | null
+          sort_order: number
           story_notes: string | null
           unfair_advantage: string | null
           updated_at: string
@@ -90,11 +92,13 @@ export type Database = {
           icp_titles?: string | null
           id?: string
           is_active?: boolean
+          is_archived?: boolean
           name?: string
           offer_summary?: string | null
           pain_points?: string | null
           partner_types?: string | null
           problems_solved?: string | null
+          sort_order?: number
           story_notes?: string | null
           unfair_advantage?: string | null
           updated_at?: string
@@ -112,10 +116,45 @@ export type Database = {
           icp_titles?: string | null
           id?: string
           is_active?: boolean
+          is_archived?: boolean
           name?: string
           offer_summary?: string | null
           pain_points?: string | null
           partner_types?: string | null
+          problems_solved?: string | null
+          sort_order?: number
+          story_notes?: string | null
+          unfair_advantage?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      business_profile: {
+        Row: {
+          business_summary: string | null
+          created_at: string
+          id: string
+          problems_solved: string | null
+          story_notes: string | null
+          unfair_advantage: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          business_summary?: string | null
+          created_at?: string
+          id?: string
+          problems_solved?: string | null
+          story_notes?: string | null
+          unfair_advantage?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          business_summary?: string | null
+          created_at?: string
+          id?: string
           problems_solved?: string | null
           story_notes?: string | null
           unfair_advantage?: string | null
@@ -165,6 +204,7 @@ export type Database = {
       profiles: {
         Row: {
           created_at: string
+          current_brief_id: string | null
           email: string | null
           full_name: string | null
           id: string
@@ -172,6 +212,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          current_brief_id?: string | null
           email?: string | null
           full_name?: string | null
           id: string
@@ -179,16 +220,26 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          current_brief_id?: string | null
           email?: string | null
           full_name?: string | null
           id?: string
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_current_brief_id_fkey"
+            columns: ["current_brief_id"]
+            isOneToOne: false
+            referencedRelation: "audience_briefs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       prospect_lists: {
         Row: {
           audience: string
+          brief_id: string | null
           created_at: string
           id: string
           name: string
@@ -199,6 +250,7 @@ export type Database = {
         }
         Insert: {
           audience?: string
+          brief_id?: string | null
           created_at?: string
           id?: string
           name: string
@@ -209,6 +261,7 @@ export type Database = {
         }
         Update: {
           audience?: string
+          brief_id?: string | null
           created_at?: string
           id?: string
           name?: string
@@ -217,12 +270,21 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "prospect_lists_brief_id_fkey"
+            columns: ["brief_id"]
+            isOneToOne: false
+            referencedRelation: "audience_briefs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       prospects: {
         Row: {
           audience: string
           blurb: string | null
+          brief_id: string | null
           company: string | null
           created_at: string
           email: string | null
@@ -245,6 +307,7 @@ export type Database = {
         Insert: {
           audience?: string
           blurb?: string | null
+          brief_id?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
@@ -267,6 +330,7 @@ export type Database = {
         Update: {
           audience?: string
           blurb?: string | null
+          brief_id?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
@@ -288,6 +352,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "prospects_brief_id_fkey"
+            columns: ["brief_id"]
+            isOneToOne: false
+            referencedRelation: "audience_briefs"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "prospects_list_id_fkey"
             columns: ["list_id"]
             isOneToOne: false
@@ -299,6 +370,7 @@ export type Database = {
       threads: {
         Row: {
           agent: string
+          brief_id: string | null
           created_at: string
           id: string
           mode: string
@@ -308,6 +380,7 @@ export type Database = {
         }
         Insert: {
           agent?: string
+          brief_id?: string | null
           created_at?: string
           id?: string
           mode?: string
@@ -317,6 +390,7 @@ export type Database = {
         }
         Update: {
           agent?: string
+          brief_id?: string | null
           created_at?: string
           id?: string
           mode?: string
@@ -324,7 +398,15 @@ export type Database = {
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "threads_brief_id_fkey"
+            columns: ["brief_id"]
+            isOneToOne: false
+            referencedRelation: "audience_briefs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
