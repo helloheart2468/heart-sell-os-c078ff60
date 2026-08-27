@@ -9,6 +9,19 @@ import { AGENTS, isAgentId, type AgentId } from "@/lib/heart-sell";
 import { getThread, getThreadMessages, renameThread } from "@/lib/threads";
 
 const HANDOFFS: Record<AgentId, { agent: AgentId; label: string; prompt: string }[]> = {
+  guide: [
+    {
+      agent: "scout",
+      label: "Build a list →",
+      prompt:
+        "Let's turn this into a list. Confirm the exact target profile with me, then find real people who match.",
+    },
+    {
+      agent: "quill",
+      label: "Write outreach →",
+      prompt: "Help me write the CCRA first message for the people I'm targeting.",
+    },
+  ],
   sage: [
     {
       agent: "scout",
