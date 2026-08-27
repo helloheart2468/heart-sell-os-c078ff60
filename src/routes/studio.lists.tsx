@@ -196,12 +196,55 @@ function ListsPage() {
           </button>
         ) : null}
 
+        <div className="mt-8 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-4">
+          <button
+            type="button"
+            onClick={() =>
+              setSelected((prev) =>
+                prev.size === visible.length
+                  ? new Set()
+                  : new Set(visible.slice(0, 10).map((row) => row.id)),
+              )
+            }
+            disabled={visible.length === 0}
+            className="h-9 rounded-full border border-border px-4 text-foreground hover:bg-muted disabled:opacity-40"
+          >
+            {selected.size === visible.length && visible.length > 0
+              ? "Clear selection"
+              : "Select up to 10"}
+          </button>
+          <span className="text-muted-foreground">{selected.size} selected</span>
+          <button
+            type="button"
+            onClick={() => void research()}
+            disabled={selected.size === 0 || researching}
+            className="inline-flex h-9 items-center gap-2 rounded-full bg-primary px-4 font-medium text-primary-foreground disabled:opacity-40"
+          >
+            <Sparkles className="h-4 w-4" />
+            {researching
+              ? "Researching…"
+              : `Research commonality & compliment${selected.size ? ` (${selected.size})` : ""}`}
+          </button>
+          <span className="text-muted-foreground">Up to 10 at a time.</span>
+        </div>
+
+        <BulkResearchResults entries={entries} onDraft={(id, approved) => void draftWithHooks(id, approved)} />
+
         <div className="mt-8 space-y-3">
-          {(prospects.data ?? []).map((prospect) => (
+          {visible.map((prospect) => (
             <article key={prospect.id} className="paper-panel p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
+                <div className="flex min-w-0 items-start gap-3">
+                  <input
+                    type="checkbox"
+                    checked={selected.has(prospect.id)}
+                    onChange={() => toggleSelected(prospect.id)}
+                    aria-label={`Select ${prospect.name} for research`}
+                    className="mt-2 h-5 w-5 shrink-0 accent-[color:var(--primary)]"
+                  />
+                  <div className="min-w-0">
                   <h2 className="font-display text-2xl text-foreground">{prospect.name}</h2>
+
                   <p className="text-muted-foreground">
                     {[prospect.title, prospect.company, prospect.location]
                       .filter(Boolean)
