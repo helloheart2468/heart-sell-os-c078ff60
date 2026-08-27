@@ -45,11 +45,48 @@ function FollowUpsPage() {
     await queryClient.invalidateQueries({ queryKey: ["prospects"] });
   };
 
+  const campaigns = useQuery({
+    queryKey: ["campaigns", scope ?? "all"],
+    queryFn: () => listCampaigns(scope),
+  });
+  const campaignMessages = useQuery({
+    queryKey: ["campaign-messages", "all", (campaigns.data ?? []).map((c) => c.id).join(",")],
+    queryFn: async () => {
+      const lists = await Promise.all(
+        (campaigns.data ?? []).map((campaign) => listCampaignMessages(campaign.id)),
+      );
+      return lists.flat();
+    },
+    enabled: (campaigns.data ?? []).length > 0,
+  });
+
   const rows = prospects.data ?? [];
   const grouped = ORDER.map((bucket) => ({
     bucket,
     items: rows.filter((prospect) => bucketFor(prospect) === bucket),
   })).filter((group) => group.items.length > 0);
+
+  const personalised = new Map<string, string>();
+  for (const message of campaignMessages.data ?? []) {
+    personalised.set(`${message.prospect_id}:${message.slot}`, message.body);
+  }
+
+  /** The message they owe this person next, pulled from whichever campaign covers their list. */
+  const dueRows: VaRow[] = dueNow(rows).map((prospect) => {
+    const campaign = (campaigns.data ?? []).find(
+      (entry) => entry.list_id && entry.list_id === prospect.list_id,
+    );
+    const step = Math.min((prospect.sequence_step ?? 0) + 1, 3);
+    const slot: CampaignSlot =
+      step === 1 ? "connection_note" : step === 2 ? "message_1" : "message_2";
+    return {
+      prospect,
+      message: campaign ? bodyFor(campaign, slot, personalised, prospect.id) : "",
+      channel: campaign?.channel === "email" ? "Email" : "LinkedIn",
+      campaignName: campaign?.name ?? "No campaign",
+    };
+  });
+
 
   return (
     <main className="flex-1 overflow-y-auto">
