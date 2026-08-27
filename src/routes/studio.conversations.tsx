@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { FollowUpStrip } from "@/components/followup-strip";
+import { listCampaigns } from "@/lib/campaigns";
 import { prepCall, touchHistory } from "@/lib/followup-handoff";
 import { formatDue } from "@/lib/followups";
 import { useOffers } from "@/lib/offers";
@@ -77,21 +78,44 @@ function History({ prospectId }: { prospectId: string }) {
   return <pre className="mt-2 whitespace-pre-wrap font-body text-muted-foreground">{text}</pre>;
 }
 
+function stepName(slot: string): string {
+  if (slot === "connection_note") return "Connection note";
+  if (slot === "message_1") return "Message 1";
+  if (slot === "message_2") return "Follow-up";
+  return slot;
+}
+
 function ConversationsPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { currentId } = useOffers();
 
+  const [campaignFilter, setCampaignFilter] = useState<string>("all");
+
   const prospects = useQuery({
     queryKey: ["prospects", "conversations", currentId ?? "all"],
     queryFn: () => listProspects(undefined, currentId),
   });
+  const campaigns = useQuery({
+    queryKey: ["campaigns", currentId ?? "all"],
+    queryFn: () => listCampaigns(currentId),
+  });
+  const campaignName = (id: string | null) =>
+    (campaigns.data ?? []).find((entry) => entry.id === id)?.name ?? null;
 
   const refresh = async () => {
     await queryClient.invalidateQueries({ queryKey: ["prospects"] });
   };
 
-  const rows = prospects.data ?? [];
+  const all = prospects.data ?? [];
+  const rows =
+    campaignFilter === "all"
+      ? all
+      : all.filter((prospect) =>
+          campaignFilter === "none"
+            ? !prospect.campaign_id
+            : prospect.campaign_id === campaignFilter,
+        );
   const grouped = GROUPS.map((group) => ({
     ...group,
     items: rows.filter(group.match),
@@ -114,6 +138,28 @@ function ConversationsPage() {
           Once someone answers, they live here. Ace reads the whole history — what you sent, what
           they said — and builds the 7-Step Conversation prep from what actually happened.
         </p>
+
+        {(campaigns.data ?? []).length > 0 ? (
+          <div className="mt-5 flex flex-wrap items-center gap-3">
+            <label htmlFor="campaign-filter" className="text-muted-foreground">
+              Filter by campaign
+            </label>
+            <select
+              id="campaign-filter"
+              value={campaignFilter}
+              onChange={(event) => setCampaignFilter(event.target.value)}
+              className="h-10 rounded-full border border-input bg-background px-4 text-foreground"
+            >
+              <option value="all">All campaigns</option>
+              {(campaigns.data ?? []).map((campaign) => (
+                <option key={campaign.id} value={campaign.id}>
+                  {campaign.name}
+                </option>
+              ))}
+              <option value="none">Not in a campaign</option>
+            </select>
+          </div>
+        ) : null}
 
         {grouped.length === 0 ? (
           <p className="mt-10 rounded-xl border border-dashed border-border p-8 text-center text-muted-foreground">
@@ -138,6 +184,16 @@ function ConversationsPage() {
                           {[prospect.title, prospect.company].filter(Boolean).join(" · ")}
                         </p>
                       </div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {campaignName(prospect.campaign_id) ? (
+                          <span className="rounded-full bg-primary/10 px-3 py-1 text-primary">
+                            {campaignName(prospect.campaign_id)}
+                            {prospect.campaign_slot
+                              ? ` · ${stepName(prospect.campaign_slot)}`
+                              : ""}
+                          </span>
+                        ) : null}
+                      </div>
                       {prospect.call_at ? (
                         <span className="rounded-full bg-muted px-3 py-1 text-muted-foreground">
                           Call {formatDue(prospect.call_at)}
@@ -158,7 +214,12 @@ function ConversationsPage() {
                     </div>
 
                     <div className="mt-4">
-                      <FollowUpStrip prospect={prospect} briefId={currentId} onChange={refresh} />
+                      <FollowUpStrip
+                        prospect={prospect}
+                        briefId={currentId}
+                        campaignId={prospect.campaign_id}
+                        onChange={refresh}
+                      />
                     </div>
                   </article>
                 ))}

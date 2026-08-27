@@ -27,10 +27,13 @@ const REPLY_OPTIONS: { value: ReplyOutcome; label: string }[] = [
 export function FollowUpStrip({
   prospect,
   briefId,
+  campaignId,
   onChange,
 }: {
   prospect: Prospect;
   briefId?: string | null;
+  /** When the strip is rendered inside a campaign, every touch is stamped with it. */
+  campaignId?: string | null;
   onChange: () => void | Promise<unknown>;
 }) {
   const navigate = useNavigate();
@@ -74,7 +77,7 @@ export function FollowUpStrip({
         <button
           type="button"
           disabled={busy || closed}
-          onClick={() => void run(logSent(prospect), "Logged — next touch scheduled.")}
+          onClick={() => void run(logSent(prospect, undefined, campaignId), "Logged — next touch scheduled.")}
           className="inline-flex h-9 items-center gap-1.5 rounded-full bg-primary px-4 font-medium text-primary-foreground disabled:opacity-40"
         >
           <Check className="h-4 w-4" /> Sent
@@ -129,7 +132,7 @@ export function FollowUpStrip({
               key={option.value}
               type="button"
               disabled={busy}
-              onClick={() => void run(logReply(prospect, option.value), "Reply logged.")}
+              onClick={() => void run(logReply(prospect, option.value, campaignId), "Reply logged.")}
               className="h-9 rounded-full border border-border bg-background px-4 text-foreground hover:bg-muted"
             >
               {option.label}
@@ -155,7 +158,7 @@ export function FollowUpStrip({
             disabled={busy || !callAt}
             onClick={() =>
               void run(
-                logCallBooked(prospect, new Date(callAt).toISOString()),
+                logCallBooked(prospect, new Date(callAt).toISOString(), campaignId),
                 "Booked — Ace will nudge you before it.",
               )
             }

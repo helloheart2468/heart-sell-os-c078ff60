@@ -1,4 +1,5 @@
 import { supabase } from "@/integrations/supabase/client";
+import type { CampaignSlot } from "@/lib/campaigns";
 import type { Prospect } from "@/lib/prospects";
 
 export type TouchKind = "sent" | "reply" | "call_booked" | "note";
@@ -10,6 +11,8 @@ export type Touch = {
   kind: TouchKind;
   channel: string | null;
   sequence_step: number | null;
+  campaign_id: string | null;
+  campaign_slot: string | null;
   outcome: string | null;
   body_excerpt: string | null;
   occurred_at: string;
@@ -20,7 +23,7 @@ export type FollowUpState = "new" | "active" | "waiting" | "booked" | "closed";
 export type ReplyOutcome = "interested" | "not_now" | "not_interested" | "chatting";
 
 const TOUCH_COLUMNS =
-  "id, prospect_id, thread_id, kind, channel, sequence_step, outcome, body_excerpt, occurred_at";
+  "id, prospect_id, thread_id, kind, channel, sequence_step, campaign_id, campaign_slot, outcome, body_excerpt, occurred_at";
 
 /** The 7-Day Sales Path cadence: Message 1 → +3 days, Message 2 → +3 days, Message 3 → closeout. */
 export const SEQUENCE = [
@@ -36,6 +39,30 @@ export function stepLabel(step: number | null | undefined): string {
 
 export function nextStepLabel(prospect: Prospect): string {
   return stepLabel(Math.min((prospect.sequence_step ?? 0) + 1, 3));
+}
+
+/** Which campaign step a given sequence number maps to. */
+export function slotForStep(step: number): CampaignSlot {
+  if (step <= 1) return "connection_note";
+  if (step === 2) return "message_1";
+  return "message_2";
+}
+
+/**
+ * Every touch is stamped with the campaign it belongs to. If the prospect isn't
+ * linked yet we look up the campaign that wraps their list, so replies and booked
+ * calls trace back without anyone tagging them by hand.
+ */
+export async function resolveCampaignId(prospect: Prospect): Promise<string | null> {
+  if (prospect.campaign_id) return prospect.campaign_id;
+  if (!prospect.list_id) return null;
+  const { data } = await supabase
+    .from("campaigns")
+    .select("id")
+    .eq("list_id", prospect.list_id)
+    .order("created_at", { ascending: false })
+    .limit(1);
+  return data?.[0]?.id ?? null;
 }
 
 function addDays(days: number): string {
@@ -58,6 +85,8 @@ async function logTouch(input: {
   kind: TouchKind;
   channel?: string | null;
   sequenceStep?: number | null;
+  campaignId?: string | null;
+  campaignSlot?: CampaignSlot | null;
   outcome?: string | null;
   bodyExcerpt?: string | null;
   occurredAt?: string;
@@ -71,6 +100,8 @@ async function logTouch(input: {
     kind: input.kind,
     channel: input.channel ?? null,
     sequence_step: input.sequenceStep ?? null,
+    campaign_id: input.campaignId ?? null,
+    campaign_slot: input.campaignSlot ?? null,
     outcome: input.outcome ?? null,
     body_excerpt: input.bodyExcerpt ?? null,
     occurred_at: input.occurredAt ?? new Date().toISOString(),
@@ -97,19 +128,25 @@ export async function listTouches(prospectId: string): Promise<Touch[]> {
 }
 
 /** One tap: they sent the next message. Advances the cadence automatically. */
-export async function logSent(prospect: Prospect, channel?: string) {
+export async function logSent(prospect: Prospect, channel?: string, campaignId?: string | null) {
   const step = Math.min((prospect.sequence_step ?? 0) + 1, 3);
   const wait = SEQUENCE.find((entry) => entry.step === step)?.waitDays ?? 0;
+  const campaign = campaignId ?? (await resolveCampaignId(prospect));
+  const slot = slotForStep(step);
   await logTouch({
     prospectId: prospect.id,
     briefId: prospect.brief_id,
     kind: "sent",
     channel: channel ?? null,
     sequenceStep: step,
+    campaignId: campaign,
+    campaignSlot: slot,
   });
   const done = step >= 3;
   await patchProspect(prospect.id, {
     status: "contacted",
+    campaign_id: campaign,
+    campaign_slot: slot,
     sequence_step: step,
     last_touch_at: new Date().toISOString(),
     follow_up_state: done ? "waiting" : "active",
@@ -118,16 +155,22 @@ export async function logSent(prospect: Prospect, channel?: string) {
   });
 }
 
-export async function logReply(prospect: Prospect, outcome: ReplyOutcome) {
+export async function logReply(prospect: Prospect, outcome: ReplyOutcome, campaignId?: string | null) {
+  const campaign = campaignId ?? (await resolveCampaignId(prospect));
+  const slot = slotForStep(Math.max(prospect.sequence_step ?? 1, 1));
   await logTouch({
     prospectId: prospect.id,
     briefId: prospect.brief_id,
     kind: "reply",
     outcome,
+    campaignId: campaign,
+    campaignSlot: slot,
   });
   const base = {
     last_touch_at: new Date().toISOString(),
     status: "replied",
+    campaign_id: campaign,
+    campaign_slot: slot,
   };
   if (outcome === "interested") {
     await patchProspect(prospect.id, {
@@ -165,17 +208,27 @@ export async function logReply(prospect: Prospect, outcome: ReplyOutcome) {
   });
 }
 
-export async function logCallBooked(prospect: Prospect, callAtISO: string) {
+export async function logCallBooked(
+  prospect: Prospect,
+  callAtISO: string,
+  campaignId?: string | null,
+) {
+  const campaign = campaignId ?? (await resolveCampaignId(prospect));
+  const slot = slotForStep(Math.max(prospect.sequence_step ?? 1, 1));
   await logTouch({
     prospectId: prospect.id,
     briefId: prospect.brief_id,
     kind: "call_booked",
     outcome: callAtISO,
+    campaignId: campaign,
+    campaignSlot: slot,
   });
   const prepAt = new Date(callAtISO);
   prepAt.setDate(prepAt.getDate() - 1);
   await patchProspect(prospect.id, {
     status: "call_booked",
+    campaign_id: campaign,
+    campaign_slot: slot,
     follow_up_state: "booked",
     call_at: callAtISO,
     last_touch_at: new Date().toISOString(),

@@ -53,6 +53,7 @@ function FollowUpsPage() {
     await queryClient.invalidateQueries({ queryKey: ["prospects"] });
   };
 
+  const [campaignFilter, setCampaignFilter] = useState<string>("all");
   const campaigns = useQuery({
     queryKey: ["campaigns", scope ?? "all"],
     queryFn: () => listCampaigns(scope),
@@ -68,7 +69,21 @@ function FollowUpsPage() {
     enabled: (campaigns.data ?? []).length > 0,
   });
 
-  const rows = prospects.data ?? [];
+  const campaignFor = (prospect: { campaign_id: string | null; list_id: string | null }) =>
+    (campaigns.data ?? []).find(
+      (entry) =>
+        (prospect.campaign_id && entry.id === prospect.campaign_id) ||
+        (!prospect.campaign_id && entry.list_id && entry.list_id === prospect.list_id),
+    ) ?? null;
+
+  const all = prospects.data ?? [];
+  const rows =
+    campaignFilter === "all"
+      ? all
+      : all.filter((prospect) => {
+          const campaign = campaignFor(prospect);
+          return campaignFilter === "none" ? !campaign : campaign?.id === campaignFilter;
+        });
   const grouped = ORDER.map((bucket) => ({
     bucket,
     items: rows.filter((prospect) => bucketFor(prospect) === bucket),
@@ -81,9 +96,7 @@ function FollowUpsPage() {
 
   /** The message they owe this person next, pulled from whichever campaign covers their list. */
   const dueRows: VaRow[] = dueNow(rows).map((prospect) => {
-    const campaign = (campaigns.data ?? []).find(
-      (entry) => entry.list_id && entry.list_id === prospect.list_id,
-    );
+    const campaign = campaignFor(prospect);
     const step = Math.min((prospect.sequence_step ?? 0) + 1, 3);
     const slot: CampaignSlot =
       step === 1 ? "connection_note" : step === 2 ? "message_1" : "message_2";
@@ -141,6 +154,27 @@ function FollowUpsPage() {
           ) : null}
         </div>
 
+        {(campaigns.data ?? []).length > 0 ? (
+          <div className="mt-4 flex flex-wrap items-center gap-3">
+            <label htmlFor="followup-campaign" className="text-muted-foreground">
+              Filter by campaign
+            </label>
+            <select
+              id="followup-campaign"
+              value={campaignFilter}
+              onChange={(event) => setCampaignFilter(event.target.value)}
+              className="h-10 rounded-full border border-input bg-background px-4 text-foreground"
+            >
+              <option value="all">All campaigns</option>
+              {(campaigns.data ?? []).map((campaign) => (
+                <option key={campaign.id} value={campaign.id}>
+                  {campaign.name}
+                </option>
+              ))}
+              <option value="none">Not in a campaign</option>
+            </select>
+          </div>
+        ) : null}
 
         {grouped.length === 0 ? (
           <div className="mt-10 rounded-xl border border-dashed border-border p-8 text-center text-muted-foreground">
@@ -163,6 +197,20 @@ function FollowUpsPage() {
                     <p className="text-muted-foreground">
                       {[prospect.title, prospect.company].filter(Boolean).join(" · ")}
                     </p>
+                    {campaignFor(prospect) ? (
+                      <span className="mt-2 inline-block rounded-full bg-primary/10 px-3 py-1 text-primary">
+                        {campaignFor(prospect)!.name}
+                        {prospect.campaign_slot
+                          ? ` · ${
+                              prospect.campaign_slot === "connection_note"
+                                ? "Connection note"
+                                : prospect.campaign_slot === "message_1"
+                                  ? "Message 1"
+                                  : "Follow-up"
+                            }`
+                          : ""}
+                      </span>
+                    ) : null}
                     <p className="mt-1 text-muted-foreground">
                       {prospect.last_touch_at
                         ? `Last touch ${formatDue(prospect.last_touch_at)}`
@@ -172,6 +220,7 @@ function FollowUpsPage() {
                       <FollowUpStrip
                         prospect={prospect}
                         briefId={currentId}
+                        campaignId={campaignFor(prospect)?.id ?? null}
                         onChange={refresh}
                       />
                     </div>
