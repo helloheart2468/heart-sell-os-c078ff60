@@ -285,15 +285,21 @@ export type Database = {
           audience: string
           blurb: string | null
           brief_id: string | null
+          call_at: string | null
           company: string | null
           created_at: string
           email: string | null
+          follow_up_state: string
           id: string
+          last_touch_at: string | null
           linkedin_url: string | null
           list_id: string | null
           location: string | null
           name: string
+          next_action_at: string | null
+          next_action_kind: string | null
           notes: string | null
+          sequence_step: number
           social_url: string | null
           sources: Json
           status: string
@@ -308,15 +314,21 @@ export type Database = {
           audience?: string
           blurb?: string | null
           brief_id?: string | null
+          call_at?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
+          follow_up_state?: string
           id?: string
+          last_touch_at?: string | null
           linkedin_url?: string | null
           list_id?: string | null
           location?: string | null
           name: string
+          next_action_at?: string | null
+          next_action_kind?: string | null
           notes?: string | null
+          sequence_step?: number
           social_url?: string | null
           sources?: Json
           status?: string
@@ -331,15 +343,21 @@ export type Database = {
           audience?: string
           blurb?: string | null
           brief_id?: string | null
+          call_at?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
+          follow_up_state?: string
           id?: string
+          last_touch_at?: string | null
           linkedin_url?: string | null
           list_id?: string | null
           location?: string | null
           name?: string
+          next_action_at?: string | null
+          next_action_kind?: string | null
           notes?: string | null
+          sequence_step?: number
           social_url?: string | null
           sources?: Json
           status?: string
@@ -474,6 +492,73 @@ export type Database = {
           },
           {
             foreignKeyName: "todos_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      touches: {
+        Row: {
+          body_excerpt: string | null
+          brief_id: string | null
+          channel: string | null
+          created_at: string
+          id: string
+          kind: string
+          occurred_at: string
+          outcome: string | null
+          prospect_id: string
+          sequence_step: number | null
+          thread_id: string | null
+          user_id: string
+        }
+        Insert: {
+          body_excerpt?: string | null
+          brief_id?: string | null
+          channel?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          occurred_at?: string
+          outcome?: string | null
+          prospect_id: string
+          sequence_step?: number | null
+          thread_id?: string | null
+          user_id: string
+        }
+        Update: {
+          body_excerpt?: string | null
+          brief_id?: string | null
+          channel?: string | null
+          created_at?: string
+          id?: string
+          kind?: string
+          occurred_at?: string
+          outcome?: string | null
+          prospect_id?: string
+          sequence_step?: number | null
+          thread_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "touches_brief_id_fkey"
+            columns: ["brief_id"]
+            isOneToOne: false
+            referencedRelation: "audience_briefs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "touches_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "prospects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "touches_thread_id_fkey"
             columns: ["thread_id"]
             isOneToOne: false
             referencedRelation: "threads"
