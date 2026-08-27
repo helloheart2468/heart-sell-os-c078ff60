@@ -12,7 +12,9 @@ import {
 import { FollowUpStrip } from "@/components/followup-strip";
 import { startSession } from "@/lib/handoff";
 
+import { BUCKET_LABELS, bucketFor, formatDue } from "@/lib/followups";
 import { useOffers } from "@/lib/offers";
+
 import { researchProspectsBulk } from "@/lib/research.functions";
 import {
   deleteProspect,
