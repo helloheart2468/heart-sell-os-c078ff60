@@ -3,6 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
+import { DripifyWizard } from "@/components/dripify-wizard";
 import { FollowUpStrip } from "@/components/followup-strip";
 import {
   bodyFor,
@@ -13,16 +14,7 @@ import {
   updateCampaign,
   type CampaignSlot,
 } from "@/lib/campaigns";
-import {
-  DEFAULT_DRIPIFY_COLUMNS,
-  download,
-  dripifyCsv,
-  openChecklist,
-  slugify,
-  vaCsv,
-  type DripifyColumns,
-  type VaRow,
-} from "@/lib/exports";
+import { download, openChecklist, slugify, vaCsv, type VaRow } from "@/lib/exports";
 import { startSession } from "@/lib/handoff";
 import { listProspects, prospectSummary } from "@/lib/prospects";
 
@@ -53,8 +45,8 @@ function CampaignDetail() {
   const navigate = useNavigate();
   const [editing, setEditing] = useState<{ prospectId: string; slot: CampaignSlot } | null>(null);
   const [draftBody, setDraftBody] = useState("");
-  const [columns, setColumns] = useState<DripifyColumns>(DEFAULT_DRIPIFY_COLUMNS);
   const [showExport, setShowExport] = useState(false);
+  const [showPack, setShowPack] = useState(false);
 
   const campaign = useQuery({
     queryKey: ["campaign", campaignId],
@@ -211,69 +203,42 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
         <section className="mt-10">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-display text-2xl text-foreground">Who's in it</h2>
-            <button
-              type="button"
-              onClick={() => setShowExport((value) => !value)}
-              className="h-10 rounded-full bg-primary px-5 font-medium text-primary-foreground"
-            >
-              Export
-            </button>
-          </div>
-
-          {showExport ? (
-            <div className="paper-panel mt-4 p-5">
-              <h3 className="font-display text-xl text-foreground">Dripify CSV</h3>
-              <p className="mt-1 text-muted-foreground">
-                One row per person with their LinkedIn profile URL and your messages as columns.
-                {missingLinkedIn.length > 0
-                  ? ` ${missingLinkedIn.length} person(s) without a LinkedIn URL will be skipped.`
-                  : ""}
-              </p>
-              <div className="mt-3 flex flex-wrap gap-4">
-                {(
-                  [
-                    ["connection_note", "Connection note"],
-                    ["message_1", "Message 1"],
-                    ["message_2", "Follow-up"],
-                    ["company", "Company"],
-                    ["title", "Title"],
-                    ["email", "Email"],
-                  ] as [keyof DripifyColumns, string][]
-                ).map(([key, label]) => (
-                  <label key={key} className="flex items-center gap-2 text-foreground">
-                    <input
-                      type="checkbox"
-                      checked={columns[key]}
-                      onChange={(event) =>
-                        setColumns({ ...columns, [key]: event.target.checked })
-                      }
-                      className="h-5 w-5 accent-[color:var(--primary)]"
-                    />
-                    {label}
-                  </label>
-                ))}
-              </div>
+            <div className="flex flex-wrap gap-3">
               <button
                 type="button"
                 onClick={() => {
-                  const result = dripifyCsv(data, rows, personalised, columns);
-                  if (result.included.length === 0) {
-                    toast.error("Nobody in this list has a LinkedIn URL yet.");
-                    return;
-                  }
-                  download(`${slugify(data.name)}-dripify.csv`, result.csv);
-                  toast.success(
-                    `${result.included.length} exported${
-                      result.skipped.length ? `, ${result.skipped.length} skipped` : ""
-                    }.`,
-                  );
+                  setShowPack(false);
+                  setShowExport((value) => !value);
                 }}
-                className="mt-4 h-10 rounded-full bg-primary px-5 font-medium text-primary-foreground"
+                className="h-10 rounded-full bg-primary px-5 font-medium text-primary-foreground"
               >
-                Download Dripify CSV
+                Export to Dripify
               </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowExport(false);
+                  setShowPack((value) => !value);
+                }}
+                className="h-10 rounded-full border border-border px-5 text-foreground hover:bg-muted"
+              >
+                Send-it-yourself pack
+              </button>
+            </div>
+          </div>
 
-              <h3 className="mt-8 font-display text-xl text-foreground">Send-it-yourself pack</h3>
+          {showExport ? (
+            <DripifyWizard
+              campaign={data}
+              prospects={rows}
+              personalised={personalised}
+              onClose={() => setShowExport(false)}
+            />
+          ) : null}
+
+          {showPack ? (
+            <div className="paper-panel mt-4 p-5">
+              <h3 className="font-display text-xl text-foreground">Send-it-yourself pack</h3>
               <p className="mt-1 text-muted-foreground">
                 For blowing through outreach in a spurt, or handing to a VA.
               </p>
@@ -395,7 +360,12 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
                 </div>
 
                 <div className="mt-4">
-                  <FollowUpStrip prospect={prospect} briefId={data.brief_id} onChange={refresh} />
+                  <FollowUpStrip
+                    prospect={prospect}
+                    briefId={data.brief_id}
+                    campaignId={campaignId}
+                    onChange={refresh}
+                  />
                 </div>
               </article>
             ))}
