@@ -103,7 +103,7 @@ export const generatePlaybook = createServerFn({ method: "POST" })
       ? await supabase.from("audience_briefs").select("*").eq("id", briefId).maybeSingle()
       : { data: null };
 
-    const system = `${buildSystemPrompt("guide", brief ?? null, business ?? null)}
+    const system = `${buildSystemPrompt("guide", (brief ?? null) as never, business ?? null)}
 
 YOU ARE NOW WRITING A HEART SELL OPERATING MANUAL for this founder — a document they will print, hand to a VA or a sales team, and actually work from.
 Rules for this document:
