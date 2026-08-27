@@ -1,7 +1,15 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronDown, ChevronUp, ExternalLink, Sparkles, Trash2 } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  Sparkles,
+  Trash2,
+  Upload,
+  Wand2,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -10,6 +18,8 @@ import {
   type BulkResearchEntry,
 } from "@/components/bulk-research";
 import { FollowUpStrip } from "@/components/followup-strip";
+import { ListUpload } from "@/components/list-upload";
+import { enrichProspectsBulk } from "@/lib/enrich.functions";
 import { startSession } from "@/lib/handoff";
 
 import { BUCKET_LABELS, bucketFor, formatDue } from "@/lib/followups";
@@ -131,7 +141,7 @@ function ListsPage() {
     setEnriching(true);
     try {
       const result = await runEnrich({ data: { prospectIds: ids } });
-      const filled = result.entries.filter((entry) => entry.updated > 0).length;
+      const filled = result.entries.filter((entry) => (entry.applied?.length ?? 0) > 0).length;
       await refresh();
       toast.success(
         filled > 0
