@@ -118,16 +118,27 @@ function StudioLayout() {
         </div>
 
         <div className="flex items-center justify-between px-5 pb-2 pt-7">
-          <p className="text-xs uppercase tracking-wider text-muted-foreground">History</p>
-          {offers.length > 1 ? (
+          <p className="text-xs uppercase tracking-wider text-muted-foreground">
+            {showArchived ? "Archived" : "History"}
+          </p>
+          <div className="flex items-center gap-3">
             <button
               type="button"
-              onClick={() => setShowAllOffers((value) => !value)}
+              onClick={() => setShowArchived((value) => !value)}
               className="text-xs text-muted-foreground underline-offset-2 hover:underline"
             >
-              {showAllOffers ? "This offer" : "All offers"}
+              {showArchived ? "Active" : "Archived"}
             </button>
-          ) : null}
+            {offers.length > 1 ? (
+              <button
+                type="button"
+                onClick={() => setShowAllOffers((value) => !value)}
+                className="text-xs text-muted-foreground underline-offset-2 hover:underline"
+              >
+                {showAllOffers ? "This offer" : "All offers"}
+              </button>
+            ) : null}
+          </div>
         </div>
         <nav className="flex-1 space-y-2 overflow-y-auto px-3 pb-4">
           {visibleThreads.length === 0 ? (
