@@ -127,9 +127,7 @@ SAVED LISTS: when the founder says "I have a call with <name>", call \`lookup_sa
 };
 
 const BRIEF_LABELS: Record<string, string> = {
-  business_summary: "Business",
-  problems_solved: "Problems solved",
-  unfair_advantage: "Unfair advantage",
+  name: "Offer",
   broken_phone: "Broken phone",
   icp_description: "Ideal client profile",
   icp_titles: "Buying committee titles",
@@ -140,7 +138,6 @@ const BRIEF_LABELS: Record<string, string> = {
   ecosystems: "Ecosystems",
   buyer_filters: "Ideal buyer filters",
   offer_summary: "Offers, timeline and pricing",
-  story_notes: "Story notes",
 };
 
 const BUSINESS_LABELS: Record<string, string> = {
