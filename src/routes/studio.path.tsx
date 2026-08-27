@@ -5,7 +5,7 @@ import { toast } from "sonner";
 
 import { startSession } from "@/lib/handoff";
 import { listProspects } from "@/lib/prospects";
-import { getActiveBrief } from "@/lib/threads";
+import { useOffers } from "@/lib/offers";
 
 export const Route = createFileRoute("/studio/path")({
   head: () => ({
@@ -28,10 +28,13 @@ export const Route = createFileRoute("/studio/path")({
 
 function GuidedPath() {
   const navigate = useNavigate();
-  const brief = useQuery({ queryKey: ["brief"], queryFn: getActiveBrief });
-  const prospects = useQuery({ queryKey: ["prospects", "all"], queryFn: () => listProspects() });
+  const { currentId, currentOffer } = useOffers();
+  const prospects = useQuery({
+    queryKey: ["prospects", currentId ?? "all"],
+    queryFn: () => listProspects(undefined, currentId),
+  });
 
-  const hasBrief = Boolean(brief.data);
+  const hasBrief = Boolean(currentOffer?.icp_description || currentOffer?.broken_phone);
   const hasProspects = (prospects.data?.length ?? 0) > 0;
 
   const go = async (
@@ -39,7 +42,7 @@ function GuidedPath() {
     prompt: string,
   ) => {
     try {
-      const threadId = await startSession(agent, "chat", prompt);
+      const threadId = await startSession(agent, "chat", prompt, undefined, currentId);
       await navigate({ to: "/studio/$threadId", params: { threadId } });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Couldn't start that step.");
@@ -98,6 +101,10 @@ function GuidedPath() {
     <main className="flex-1 overflow-y-auto">
       <div className="mx-auto w-full max-w-3xl px-6 py-14">
         <h1 className="font-display text-4xl text-foreground">The full path</h1>
+        <p className="mt-2 text-muted-foreground">
+          For <span className="text-foreground">{currentOffer?.name || "your offer"}</span>. Switch
+          offers in the sidebar to run the path for a different one.
+        </p>
         <p className="mt-3 text-muted-foreground">
           Four steps, in the order Dora teaches them. You can jump out to open chat at any point —
           nothing here locks you in.
