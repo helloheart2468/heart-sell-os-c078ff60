@@ -404,6 +404,14 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
           </div>
         </section>
       </div>
+
+      <TeamPack
+        open={showTeamPack}
+        onOpenChange={setShowTeamPack}
+        campaign={data}
+        prospects={rows}
+        personalised={personalised}
+      />
     </main>
   );
 }
