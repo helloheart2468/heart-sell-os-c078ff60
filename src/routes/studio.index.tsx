@@ -29,6 +29,7 @@ export const Route = createFileRoute("/studio/")({
 function StudioHome() {
   const navigate = useNavigate();
   const [openAgent, setOpenAgent] = useState<AgentId | null>(null);
+  const [openChat, setOpenChat] = useState("");
   const brief = useQuery({ queryKey: ["brief"], queryFn: getActiveBrief });
 
   const start = async (agent: AgentId, mode: "chat" | "structured", prompt?: string, title?: string) => {
