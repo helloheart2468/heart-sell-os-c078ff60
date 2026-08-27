@@ -8,8 +8,9 @@ export async function startSession(
   mode: "chat" | "structured",
   prompt?: string,
   title?: string,
+  briefId?: string | null,
 ): Promise<string> {
-  const threadId = await createThread(agent, mode, title);
+  const threadId = await createThread(agent, mode, title, briefId);
   if (prompt && typeof window !== "undefined") {
     sessionStorage.setItem(`${PENDING_PREFIX}${threadId}`, prompt);
   }

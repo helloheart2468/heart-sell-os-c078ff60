@@ -27,7 +27,7 @@ function json(body: unknown, status: number) {
   });
 }
 
-function buildTools(agent: AgentId, supabase: SupabaseClient) {
+function buildTools(agent: AgentId, supabase: SupabaseClient, briefId: string | null) {
   const lookupSavedContacts = tool({
     description:
       "Look up people the founder has already saved to their Heart Sell lists, by name, company or keyword. Use this before asking the founder to re-type details about a contact.",
@@ -39,12 +39,16 @@ function buildTools(agent: AgentId, supabase: SupabaseClient) {
       const { data, error } = await supabase
         .from("prospects")
         .select(
-          "id, name, title, company, blurb, location, linkedin_url, social_url, website, email, audience, temperature, status, why_fits, notes, list_id",
+          "id, name, title, company, blurb, location, linkedin_url, social_url, website, email, audience, temperature, status, why_fits, notes, list_id, brief_id",
         )
         .or(`name.ilike.%${term}%,company.ilike.%${term}%,blurb.ilike.%${term}%`)
         .limit(8);
       if (error) return { error: error.message, matches: [] };
-      return { matches: data ?? [] };
+      const matches = (data ?? []).map((row) => {
+        const rowBrief = (row as { brief_id?: string | null }).brief_id ?? null;
+        return { ...row, from_another_offer: Boolean(briefId && rowBrief && rowBrief !== briefId) };
+      });
+      return { matches };
     },
   });
 
@@ -52,9 +56,11 @@ function buildTools(agent: AgentId, supabase: SupabaseClient) {
     description: "List the founder's saved prospect lists with how many people are on each.",
     inputSchema: z.object({}),
     execute: async () => {
-      const { data: lists, error } = await supabase
+      let listQuery = supabase
         .from("prospect_lists")
-        .select("id, name, audience, temperature")
+        .select("id, name, audience, temperature");
+      if (briefId) listQuery = listQuery.eq("brief_id", briefId);
+      const { data: lists, error } = await listQuery
         .order("updated_at", { ascending: false })
         .limit(25);
       if (error) return { error: error.message, lists: [] };
@@ -152,17 +158,39 @@ export const Route = createFileRoute("/api/chat")({
 
         const { data: thread } = await supabase
           .from("threads")
-          .select("id, user_id")
+          .select("id, user_id, brief_id")
           .eq("id", threadId)
           .maybeSingle();
         if (!thread) return json({ error: "Conversation not found." }, 404);
 
-        const { data: brief } = await supabase
+        const threadBriefId = (thread as { brief_id?: string | null }).brief_id ?? null;
+        let briefId = threadBriefId;
+        if (!briefId) {
+          const { data: profile } = await supabase
+            .from("profiles")
+            .select("current_brief_id")
+            .maybeSingle();
+          briefId = (profile as { current_brief_id?: string | null } | null)?.current_brief_id ?? null;
+        }
+
+        const { data: offers } = await supabase
           .from("audience_briefs")
-          .select("*")
-          .eq("is_active", true)
-          .order("updated_at", { ascending: false })
-          .limit(1)
+          .select("id, name")
+          .eq("is_archived", false);
+
+        if (!briefId) briefId = (offers?.[0] as { id?: string } | undefined)?.id ?? null;
+
+        const { data: brief } = briefId
+          ? await supabase.from("audience_briefs").select("*").eq("id", briefId).maybeSingle()
+          : { data: null };
+
+        if (!threadBriefId && briefId) {
+          await supabase.from("threads").update({ brief_id: briefId }).eq("id", threadId);
+        }
+
+        const { data: business } = await supabase
+          .from("business_profile")
+          .select("business_summary, problems_solved, unfair_advantage, story_notes")
           .maybeSingle();
 
         const apiKey = process.env["LOVABLE_API_KEY"];
@@ -186,9 +214,14 @@ export const Route = createFileRoute("/api/chat")({
         try {
           const result = streamText({
             model: gateway("google/gemini-3.7-flash"),
-            system: buildSystemPrompt(agent, brief ?? null),
+            system: buildSystemPrompt(
+              agent,
+              (brief as Record<string, string> | null) ?? null,
+              (business as Record<string, string> | null) ?? null,
+              ((offers ?? []) as { name?: string }[]).map((offer) => offer.name ?? ""),
+            ),
             messages: await convertToModelMessages(messages),
-            tools: buildTools(agent, supabase),
+            tools: buildTools(agent, supabase, briefId),
             stopWhen: stepCountIs(50),
           });
 

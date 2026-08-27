@@ -5,6 +5,7 @@ import { useState } from "react";
 import { toast } from "sonner";
 
 import { startSession } from "@/lib/handoff";
+import { useOffers } from "@/lib/offers";
 import {
   deleteProspect,
   deleteProspectList,
@@ -38,11 +39,17 @@ function ListsPage() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [activeList, setActiveList] = useState<string | "all">("all");
+  const [allOffers, setAllOffers] = useState(false);
+  const { currentId, currentOffer, offers } = useOffers();
+  const scope = allOffers ? null : currentId;
 
-  const lists = useQuery({ queryKey: ["prospect-lists"], queryFn: listProspectLists });
+  const lists = useQuery({
+    queryKey: ["prospect-lists", scope ?? "all"],
+    queryFn: () => listProspectLists(scope ?? undefined),
+  });
   const prospects = useQuery({
-    queryKey: ["prospects", activeList],
-    queryFn: () => listProspects(activeList === "all" ? undefined : activeList),
+    queryKey: ["prospects", activeList, scope ?? "all"],
+    queryFn: () => listProspects(activeList === "all" ? undefined : activeList, scope),
   });
 
   const refresh = async () => {
@@ -57,7 +64,7 @@ function ListsPage() {
         ? `I want to reach out to this person from my saved list:\n\n${block}\n\nHelp me write the CCRA first message. Ask me for any real commonality or compliment you need — don't invent one.`
         : `I have a call with ${prospect.name}. Here's what we have on file:\n\n${block}\n\nBuild my prep sheet.`;
     try {
-      const threadId = await startSession(agent, "chat", prompt);
+      const threadId = await startSession(agent, "chat", prompt, undefined, prospect.brief_id ?? currentId);
       await navigate({ to: "/studio/$threadId", params: { threadId } });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Couldn't hand that off.");
@@ -72,6 +79,24 @@ function ListsPage() {
           Everyone Scout found and you kept. Send anyone straight to Quill for outreach, or to Ace
           when a call lands.
         </p>
+
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-muted-foreground">
+          <span>
+            Showing{" "}
+            <span className="text-foreground">
+              {allOffers ? "every offer" : currentOffer?.name || "your current offer"}
+            </span>
+          </span>
+          {offers.length > 1 ? (
+            <button
+              type="button"
+              onClick={() => setAllOffers((value) => !value)}
+              className="h-9 rounded-full border border-border px-4 text-foreground hover:bg-muted"
+            >
+              {allOffers ? "Just this offer" : "Show all offers"}
+            </button>
+          ) : null}
+        </div>
 
         <div className="mt-8 flex flex-wrap gap-2">
           <button

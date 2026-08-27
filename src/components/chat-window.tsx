@@ -32,12 +32,14 @@ function textOf(message: UIMessage) {
 export function ChatWindow({
   threadId,
   agent,
+  briefId,
   initialMessages,
   autoSend,
   onFirstMessage,
 }: {
   threadId: string;
   agent: AgentId;
+  briefId?: string | null;
   initialMessages: UIMessage[];
   autoSend?: string;
   onFirstMessage?: (text: string) => void;
@@ -127,6 +129,7 @@ export function ChatWindow({
                         <ProspectResults
                           key={index}
                           output={(part as { output: ProspectSearchOutput }).output}
+                          briefId={briefId ?? null}
                         />
                       );
                     }

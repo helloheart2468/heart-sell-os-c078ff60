@@ -15,9 +15,12 @@ import { Route as StudioRouteImport } from './routes/studio'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as StudioIndexRouteImport } from './routes/studio.index'
 import { Route as StudioThreadIdRouteImport } from './routes/studio.$threadId'
-import { Route as StudioBriefRouteImport } from './routes/studio.brief'
+import { Route as StudioBusinessRouteImport } from './routes/studio.business'
 import { Route as StudioListsRouteImport } from './routes/studio.lists'
+import { Route as StudioOffersRouteImport } from './routes/studio.offers'
 import { Route as StudioPathRouteImport } from './routes/studio.path'
+import { Route as StudioBriefIndexRouteImport } from './routes/studio.brief.index'
+import { Route as StudioBriefBriefIdRouteImport } from './routes/studio.brief.$briefId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -49,9 +52,9 @@ const StudioThreadIdRoute = StudioThreadIdRouteImport.update({
   path: '/$threadId',
   getParentRoute: () => StudioRoute,
 } as any)
-const StudioBriefRoute = StudioBriefRouteImport.update({
-  id: '/brief',
-  path: '/brief',
+const StudioBusinessRoute = StudioBusinessRouteImport.update({
+  id: '/business',
+  path: '/business',
   getParentRoute: () => StudioRoute,
 } as any)
 const StudioListsRoute = StudioListsRouteImport.update({
@@ -59,9 +62,24 @@ const StudioListsRoute = StudioListsRouteImport.update({
   path: '/lists',
   getParentRoute: () => StudioRoute,
 } as any)
+const StudioOffersRoute = StudioOffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => StudioRoute,
+} as any)
 const StudioPathRoute = StudioPathRouteImport.update({
   id: '/path',
   path: '/path',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioBriefIndexRoute = StudioBriefIndexRouteImport.update({
+  id: '/brief/',
+  path: '/brief/',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioBriefBriefIdRoute = StudioBriefBriefIdRouteImport.update({
+  id: '/brief/$briefId',
+  path: '/brief/$briefId',
   getParentRoute: () => StudioRoute,
 } as any)
 
@@ -71,20 +89,26 @@ export interface FileRoutesByFullPath {
   '/studio': typeof StudioRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
-  '/studio/brief': typeof StudioBriefRoute
+  '/studio/business': typeof StudioBusinessRoute
   '/studio/lists': typeof StudioListsRoute
+  '/studio/offers': typeof StudioOffersRoute
   '/studio/path': typeof StudioPathRoute
   '/studio/': typeof StudioIndexRoute
+  '/studio/brief/$briefId': typeof StudioBriefBriefIdRoute
+  '/studio/brief/': typeof StudioBriefIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/api/chat': typeof ApiChatRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
-  '/studio/brief': typeof StudioBriefRoute
+  '/studio/business': typeof StudioBusinessRoute
   '/studio/lists': typeof StudioListsRoute
+  '/studio/offers': typeof StudioOffersRoute
   '/studio/path': typeof StudioPathRoute
   '/studio': typeof StudioIndexRoute
+  '/studio/brief/$briefId': typeof StudioBriefBriefIdRoute
+  '/studio/brief': typeof StudioBriefIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -93,10 +117,13 @@ export interface FileRoutesById {
   '/studio': typeof StudioRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
-  '/studio/brief': typeof StudioBriefRoute
+  '/studio/business': typeof StudioBusinessRoute
   '/studio/lists': typeof StudioListsRoute
+  '/studio/offers': typeof StudioOffersRoute
   '/studio/path': typeof StudioPathRoute
   '/studio/': typeof StudioIndexRoute
+  '/studio/brief/$briefId': typeof StudioBriefBriefIdRoute
+  '/studio/brief/': typeof StudioBriefIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -106,20 +133,26 @@ export interface FileRouteTypes {
     | '/studio'
     | '/api/chat'
     | '/studio/$threadId'
-    | '/studio/brief'
+    | '/studio/business'
     | '/studio/lists'
+    | '/studio/offers'
     | '/studio/path'
     | '/studio/'
+    | '/studio/brief/$briefId'
+    | '/studio/brief/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/api/chat'
     | '/studio/$threadId'
-    | '/studio/brief'
+    | '/studio/business'
     | '/studio/lists'
+    | '/studio/offers'
     | '/studio/path'
     | '/studio'
+    | '/studio/brief/$briefId'
+    | '/studio/brief'
   id:
     | '__root__'
     | '/'
@@ -127,10 +160,13 @@ export interface FileRouteTypes {
     | '/studio'
     | '/api/chat'
     | '/studio/$threadId'
-    | '/studio/brief'
+    | '/studio/business'
     | '/studio/lists'
+    | '/studio/offers'
     | '/studio/path'
     | '/studio/'
+    | '/studio/brief/$briefId'
+    | '/studio/brief/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -184,11 +220,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioThreadIdRouteImport
       parentRoute: typeof StudioRoute
     }
-    '/studio/brief': {
-      id: '/studio/brief'
-      path: '/brief'
-      fullPath: '/studio/brief'
-      preLoaderRoute: typeof StudioBriefRouteImport
+    '/studio/business': {
+      id: '/studio/business'
+      path: '/business'
+      fullPath: '/studio/business'
+      preLoaderRoute: typeof StudioBusinessRouteImport
       parentRoute: typeof StudioRoute
     }
     '/studio/lists': {
@@ -198,6 +234,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioListsRouteImport
       parentRoute: typeof StudioRoute
     }
+    '/studio/offers': {
+      id: '/studio/offers'
+      path: '/offers'
+      fullPath: '/studio/offers'
+      preLoaderRoute: typeof StudioOffersRouteImport
+      parentRoute: typeof StudioRoute
+    }
     '/studio/path': {
       id: '/studio/path'
       path: '/path'
@@ -205,23 +248,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioPathRouteImport
       parentRoute: typeof StudioRoute
     }
+    '/studio/brief/': {
+      id: '/studio/brief/'
+      path: '/brief'
+      fullPath: '/studio/brief/'
+      preLoaderRoute: typeof StudioBriefIndexRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/brief/$briefId': {
+      id: '/studio/brief/$briefId'
+      path: '/brief/$briefId'
+      fullPath: '/studio/brief/$briefId'
+      preLoaderRoute: typeof StudioBriefBriefIdRouteImport
+      parentRoute: typeof StudioRoute
+    }
   }
 }
 
 interface StudioRouteChildren {
   StudioThreadIdRoute: typeof StudioThreadIdRoute
-  StudioBriefRoute: typeof StudioBriefRoute
+  StudioBusinessRoute: typeof StudioBusinessRoute
   StudioListsRoute: typeof StudioListsRoute
+  StudioOffersRoute: typeof StudioOffersRoute
   StudioPathRoute: typeof StudioPathRoute
   StudioIndexRoute: typeof StudioIndexRoute
+  StudioBriefBriefIdRoute: typeof StudioBriefBriefIdRoute
+  StudioBriefIndexRoute: typeof StudioBriefIndexRoute
 }
 
 const StudioRouteChildren: StudioRouteChildren = {
   StudioThreadIdRoute: StudioThreadIdRoute,
-  StudioBriefRoute: StudioBriefRoute,
+  StudioBusinessRoute: StudioBusinessRoute,
   StudioListsRoute: StudioListsRoute,
+  StudioOffersRoute: StudioOffersRoute,
   StudioPathRoute: StudioPathRoute,
   StudioIndexRoute: StudioIndexRoute,
+  StudioBriefBriefIdRoute: StudioBriefBriefIdRoute,
+  StudioBriefIndexRoute: StudioBriefIndexRoute,
 }
 
 const StudioRouteWithChildren =

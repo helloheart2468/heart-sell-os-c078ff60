@@ -42,6 +42,34 @@ export const CHANNEL_OPTIONS = [
   "Phone",
 ];
 
+export const BUSINESS_FIELDS: StructuredField[] = [
+      {
+        name: "business_summary",
+        label: "What is your business, in plain language?",
+        type: "textarea",
+        placeholder: "What you sell, to whom, and how you deliver it.",
+        required: true,
+      },
+      {
+        name: "problems_solved",
+        label: "What problems do you solve?",
+        type: "textarea",
+        help: "Not the service description — the actual transformation or relief. Include problems they don't yet know they have.",
+      },
+      {
+        name: "unfair_advantage",
+        label: "Your unfair advantage",
+        type: "textarea",
+        placeholder: "What you bring that nobody else brings in quite the same way.",
+      },
+      {
+        name: "story_notes",
+        label: "Story notes (credentials + vulnerability)",
+        type: "textarea",
+        placeholder: "Raw material for your 3-5 minute story in Step 5 of the conversation.",
+      },
+];
+
 export const AGENTS: Record<AgentId, Agent> = {
   guide: {
     id: "guide",
@@ -83,23 +111,12 @@ export const AGENTS: Record<AgentId, Agent> = {
     ],
     fields: [
       {
-        name: "business_summary",
-        label: "What is your business, in plain language?",
-        type: "textarea",
-        placeholder: "What you sell, to whom, and how you deliver it.",
+        name: "name",
+        label: "Offer name",
+        type: "text",
+        placeholder: "e.g. Fractional CMO retainer, Workshop day",
+        help: "Everything below is specific to this offer. Your business, expertise and story live in your Business core.",
         required: true,
-      },
-      {
-        name: "problems_solved",
-        label: "What problems do you solve?",
-        type: "textarea",
-        help: "Not the service description — the actual transformation or relief. Include problems they don't yet know they have.",
-      },
-      {
-        name: "unfair_advantage",
-        label: "Your unfair advantage",
-        type: "textarea",
-        placeholder: "What you bring that nobody else brings in quite the same way.",
       },
       {
         name: "broken_phone",
@@ -160,12 +177,6 @@ export const AGENTS: Record<AgentId, Agent> = {
         label: "Your offers, timeline and pricing",
         type: "textarea",
         placeholder: "Deliverables, length, investment — the raw material for a simple pitch.",
-      },
-      {
-        name: "story_notes",
-        label: "Story notes (credentials + vulnerability)",
-        type: "textarea",
-        placeholder: "Raw material for your 3-5 minute story in Step 5 of the conversation.",
       },
     ],
   },

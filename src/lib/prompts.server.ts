@@ -127,9 +127,7 @@ SAVED LISTS: when the founder says "I have a call with <name>", call \`lookup_sa
 };
 
 const BRIEF_LABELS: Record<string, string> = {
-  business_summary: "Business",
-  problems_solved: "Problems solved",
-  unfair_advantage: "Unfair advantage",
+  name: "Offer",
   broken_phone: "Broken phone",
   icp_description: "Ideal client profile",
   icp_titles: "Buying committee titles",
@@ -140,10 +138,21 @@ const BRIEF_LABELS: Record<string, string> = {
   ecosystems: "Ecosystems",
   buyer_filters: "Ideal buyer filters",
   offer_summary: "Offers, timeline and pricing",
+};
+
+const BUSINESS_LABELS: Record<string, string> = {
+  business_summary: "The business",
+  problems_solved: "Problems they solve",
+  unfair_advantage: "Unfair advantage",
   story_notes: "Story notes",
 };
 
-export function buildSystemPrompt(agentId: AgentId, brief: BriefRow | null): string {
+export function buildSystemPrompt(
+  agentId: AgentId,
+  brief: BriefRow | null,
+  business: BriefRow | null = null,
+  offerNames: string[] = [],
+): string {
   const briefBlock = brief
     ? Object.entries(BRIEF_LABELS)
         .map(([key, label]) => {
@@ -158,5 +167,28 @@ export function buildSystemPrompt(agentId: AgentId, brief: BriefRow | null): str
     ? `\n\nTHIS FOUNDER'S AUDIENCE AUDIT (use it in every answer; never contradict it, and flag when it is too vague to work from):\n${briefBlock}`
     : `\n\nThis founder has not completed an Audience Audit yet. Work with what they tell you in the conversation, and recommend they run Sage's Audience Audit so your work has something true to stand on.`;
 
-  return `${CANON}\n\n${AGENT_PROMPTS[agentId]}${audience}`;
+  const businessBlock = business
+    ? Object.entries(BUSINESS_LABELS)
+        .map(([key, label]) => {
+          const value = (business[key] ?? "").toString().trim();
+          return value ? `${label}: ${value}` : null;
+        })
+        .filter(Boolean)
+        .join("\n")
+    : "";
+
+  const core = businessBlock
+    ? `\n\nTHE BUSINESS BEHIND EVERY OFFER (true across all their offers):\n${businessBlock}`
+    : "";
+
+  const offerName = (brief?.["name"] ?? "").toString().trim();
+  const offerContext = offerName
+    ? `\n\nYou are working on ONE offer right now: "${offerName}". Everything you produce must be for this offer specifically. Never mix audiences, pain points or pitches across offers.${
+        offerNames.filter((name) => name && name !== offerName).length
+          ? ` Their other offers are: ${offerNames.filter((n) => n && n !== offerName).join(", ")}. If the founder's request clearly belongs to a different offer, say so and tell them to switch offers in the sidebar rather than guessing.`
+          : ""
+      }`
+    : "";
+
+  return `${CANON}\n\n${AGENT_PROMPTS[agentId]}${core}${offerContext}${audience}`;
 }
