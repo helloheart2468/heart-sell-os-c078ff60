@@ -15,6 +15,13 @@
       "when": 1787816394886,
       "tag": "0001_offers_business_core",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1787825125562,
+      "tag": "0002_threads_pin_archive",
+      "breakpoints": true
     }
   ]
 }

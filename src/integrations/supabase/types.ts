@@ -373,6 +373,8 @@ export type Database = {
           brief_id: string | null
           created_at: string
           id: string
+          is_archived: boolean
+          is_pinned: boolean
           mode: string
           title: string
           updated_at: string
@@ -383,6 +385,8 @@ export type Database = {
           brief_id?: string | null
           created_at?: string
           id?: string
+          is_archived?: boolean
+          is_pinned?: boolean
           mode?: string
           title?: string
           updated_at?: string
@@ -393,6 +397,8 @@ export type Database = {
           brief_id?: string | null
           created_at?: string
           id?: string
+          is_archived?: boolean
+          is_pinned?: boolean
           mode?: string
           title?: string
           updated_at?: string
