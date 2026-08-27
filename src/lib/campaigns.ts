@@ -42,12 +42,48 @@ export const PURPOSES: { value: CampaignPurpose; label: string; hint: string }[]
   },
 ];
 
+export type ChannelOption = {
+  value: string;
+  label: string;
+  hint: string;
+};
+
+export const CHANNELS: ChannelOption[] = [
+  { value: "linkedin", label: "LinkedIn", hint: "Connection note, then a message once accepted." },
+  { value: "email", label: "Email", hint: "Short subject line, no pitch, one clear ask." },
+  { value: "instagram", label: "Instagram DM", hint: "Short, human, phone-length. No paragraphs." },
+  { value: "facebook", label: "Facebook DM / Messenger", hint: "Groups and warm circles; keep it casual." },
+  { value: "dm", label: "Other DM (X, TikTok, WhatsApp)", hint: "Any direct message channel." },
+];
+
+export const WARMTHS = [
+  {
+    value: "cold",
+    label: "Cold — they don't know me",
+    hint: "Earn the reply first. Lead with a real, sourced reason you're in their inbox.",
+  },
+  {
+    value: "warm",
+    label: "Warm / hot — we've connected before",
+    hint: "Pick the thread back up. Reference the actual last touch, not a template.",
+  },
+];
+
+export function channelLabel(value: string) {
+  return CHANNELS.find((c) => c.value === value)?.label ?? "LinkedIn";
+}
+
+export function isDm(value: string) {
+  return value === "instagram" || value === "facebook" || value === "dm";
+}
+
 export type Campaign = {
   id: string;
   brief_id: string | null;
   list_id: string | null;
   name: string;
   channel: string;
+  warmth: string;
   status: string;
   purpose: CampaignPurpose;
   event_name: string | null;
@@ -71,7 +107,7 @@ export type CampaignMessage = {
 };
 
 const CAMPAIGN_COLUMNS =
-  "id, brief_id, list_id, name, channel, status, purpose, event_name, event_date, event_format, event_link, connection_note, message_1, message_2, created_at, updated_at";
+  "id, brief_id, list_id, name, channel, warmth, status, purpose, event_name, event_date, event_format, event_link, connection_note, message_1, message_2, created_at, updated_at";
 
 async function currentUserId() {
   const { data } = await supabase.auth.getUser();
@@ -103,6 +139,7 @@ export async function createCampaign(input: {
   listId: string | null;
   briefId: string | null;
   channel: string;
+  warmth?: string;
   purpose?: CampaignPurpose;
   eventName?: string | null;
   eventDate?: string | null;
@@ -118,6 +155,7 @@ export async function createCampaign(input: {
       list_id: input.listId,
       brief_id: input.briefId,
       channel: input.channel,
+      warmth: input.warmth ?? "cold",
       purpose: input.purpose ?? "evergreen",
       event_name: input.eventName ?? null,
       event_date: input.eventDate ?? null,

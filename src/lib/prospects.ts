@@ -11,6 +11,54 @@ export type ProspectList = {
   updated_at: string;
 };
 
+export type SocialLink = { platform: string; url: string };
+
+export const SOCIAL_PLATFORMS = [
+  "LinkedIn",
+  "Instagram",
+  "Facebook",
+  "X",
+  "YouTube",
+  "TikTok",
+  "Substack",
+  "Other",
+];
+
+export function platformFromUrl(url: string): string {
+  const value = url.toLowerCase();
+  if (value.includes("linkedin.com")) return "LinkedIn";
+  if (value.includes("instagram.com")) return "Instagram";
+  if (value.includes("facebook.com") || value.includes("fb.com")) return "Facebook";
+  if (value.includes("twitter.com") || value.includes("x.com")) return "X";
+  if (value.includes("youtube.com") || value.includes("youtu.be")) return "YouTube";
+  if (value.includes("tiktok.com")) return "TikTok";
+  if (value.includes("substack.com")) return "Substack";
+  if (value.includes("threads.net")) return "Threads";
+  return "Other";
+}
+
+/** Every active social profile we hold for this person, de-duplicated. */
+export function socialLinks(prospect: {
+  linkedin_url?: string | null;
+  social_url?: string | null;
+  socials?: SocialLink[] | null;
+}): SocialLink[] {
+  const out: SocialLink[] = [];
+  const seen = new Set<string>();
+  const push = (url?: string | null, platform?: string) => {
+    const clean = (url ?? "").trim();
+    if (!clean) return;
+    const key = clean.replace(/\/+$/, "").toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    out.push({ platform: platform || platformFromUrl(clean), url: clean });
+  };
+  push(prospect.linkedin_url, "LinkedIn");
+  push(prospect.social_url);
+  for (const link of prospect.socials ?? []) push(link?.url, link?.platform);
+  return out;
+}
+
 export type Prospect = {
   id: string;
   brief_id: string | null;
@@ -22,6 +70,7 @@ export type Prospect = {
   location: string | null;
   linkedin_url: string | null;
   social_url: string | null;
+  socials: SocialLink[];
   website: string | null;
   email: string | null;
   audience: string;
@@ -51,6 +100,7 @@ export type NewProspect = {
   location?: string;
   linkedin_url?: string;
   social_url?: string;
+  socials?: SocialLink[];
   website?: string;
   email?: string;
   why_fits?: string;
@@ -141,6 +191,7 @@ export async function saveProspects(
     location: prospect.location ?? null,
     linkedin_url: prospect.linkedin_url ?? null,
     social_url: prospect.social_url ?? null,
+    socials: prospect.socials ?? [],
     website: prospect.website ?? null,
     email: prospect.email ?? null,
     why_fits: prospect.why_fits ?? null,
@@ -159,7 +210,7 @@ export async function saveProspects(
 
 export async function updateProspect(
   id: string,
-  values: Partial<Pick<Prospect, "status" | "temperature" | "notes" | "list_id" | "email">>,
+  values: Partial<Pick<Prospect, "status" | "temperature" | "notes" | "list_id" | "email" | "socials">>,
 ) {
   const { error } = await supabase
     .from("prospects")
