@@ -103,6 +103,22 @@ export async function renameThread(threadId: string, title: string) {
   if (error) throw error;
 }
 
+export async function setThreadPinned(threadId: string, pinned: boolean) {
+  const { error } = await supabase
+    .from("threads")
+    .update({ is_pinned: pinned })
+    .eq("id", threadId);
+  if (error) throw error;
+}
+
+export async function setThreadArchived(threadId: string, archived: boolean) {
+  const { error } = await supabase
+    .from("threads")
+    .update({ is_archived: archived })
+    .eq("id", threadId);
+  if (error) throw error;
+}
+
 export async function deleteThread(threadId: string) {
   const { error } = await supabase.from("threads").delete().eq("id", threadId);
   if (error) throw error;
