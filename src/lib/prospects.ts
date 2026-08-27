@@ -55,7 +55,8 @@ export type NewProspect = {
 };
 
 const PROSPECT_COLUMNS =
-  "id, brief_id, list_id, name, title, company, blurb, location, linkedin_url, social_url, website, email, audience, temperature, status, why_fits, notes, created_at";
+  "id, brief_id, list_id, name, title, company, blurb, location, linkedin_url, social_url, website, email, audience, temperature, status, why_fits, notes, created_at, follow_up_state, sequence_step, last_touch_at, next_action_at, next_action_kind, call_at";
+
 
 async function currentUserId() {
   const { data } = await supabase.auth.getUser();
