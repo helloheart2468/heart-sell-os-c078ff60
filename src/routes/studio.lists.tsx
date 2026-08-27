@@ -1,11 +1,17 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ExternalLink, Trash2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { ExternalLink, Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import {
+  BulkResearchResults,
+  type BulkResearchEntry,
+} from "@/components/bulk-research";
 import { startSession } from "@/lib/handoff";
 import { useOffers } from "@/lib/offers";
+import { researchProspectsBulk } from "@/lib/research.functions";
 import {
   deleteProspect,
   deleteProspectList,
