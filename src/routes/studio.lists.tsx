@@ -9,7 +9,9 @@ import {
   BulkResearchResults,
   type BulkResearchEntry,
 } from "@/components/bulk-research";
+import { FollowUpStrip } from "@/components/followup-strip";
 import { startSession } from "@/lib/handoff";
+
 import { useOffers } from "@/lib/offers";
 import { researchProspectsBulk } from "@/lib/research.functions";
 import {
