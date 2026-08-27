@@ -79,7 +79,30 @@ function buildTools(agent: AgentId, supabase: SupabaseClient, briefId: string | 
     },
   });
 
-  const base = { lookup_saved_contacts: lookupSavedContacts, list_my_lists: listMyLists };
+  const suggestActions = tool({
+    description:
+      "Propose concrete next actions the founder can add to their to-do list, one item each. Call this whenever you recommend actions — including a weekly Big 5 commitment — so each one gets an 'add to my to-dos' button. Keep titles short, specific and doable.",
+    inputSchema: z.object({
+      actions: z
+        .array(
+          z.object({
+            title: z.string().describe("Short action, e.g. 'Send CCRA message to Maya Ellis'."),
+            about: z
+              .string()
+              .optional()
+              .describe("Optional short context, e.g. the person or list it relates to."),
+          }),
+        )
+        .describe("Between 1 and 7 actions."),
+    }),
+    execute: async ({ actions }) => ({ actions: actions.slice(0, 7) }),
+  });
+
+  const base = {
+    lookup_saved_contacts: lookupSavedContacts,
+    list_my_lists: listMyLists,
+    suggest_actions: suggestActions,
+  };
 
   if (agent !== "scout") return base;
 

@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AGENTS, isAgentId } from "@/lib/heart-sell";
 import { useOffers } from "@/lib/offers";
+import { listTodos } from "@/lib/todos";
 import {
   listThreads,
   renameThread,
@@ -42,6 +43,13 @@ function StudioLayout() {
     queryFn: listThreads,
     enabled: Boolean(user),
   });
+
+  const todos = useQuery({
+    queryKey: ["todos", currentId ?? "all"],
+    queryFn: () => listTodos(currentId),
+    enabled: Boolean(user),
+  });
+  const openTodoCount = (todos.data ?? []).filter((todo) => !todo.is_done).length;
 
   const mutate = async (action: Promise<unknown>) => {
     try {
@@ -142,6 +150,17 @@ function StudioLayout() {
             className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
           >
             My lists
+          </Link>
+          <Link
+            to="/studio/todos"
+            className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+          >
+            My to-dos
+            {openTodoCount > 0 ? (
+              <span className="rounded-full bg-primary px-2 text-sm text-primary-foreground">
+                {openTodoCount}
+              </span>
+            ) : null}
           </Link>
         </div>
 

@@ -17,6 +17,10 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import {
+  ActionSuggestions,
+  type ActionSuggestionsOutput,
+} from "@/components/action-suggestions";
+import {
   ProspectResults,
   type ProspectSearchOutput,
 } from "@/components/prospect-results";
@@ -130,6 +134,19 @@ export function ChatWindow({
                           key={index}
                           output={(part as { output: ProspectSearchOutput }).output}
                           briefId={briefId ?? null}
+                        />
+                      );
+                    }
+                    if (type === "tool-suggest_actions") {
+                      const state = (part as { state?: string }).state;
+                      if (state !== "output-available") return null;
+                      return (
+                        <ActionSuggestions
+                          key={index}
+                          output={(part as { output: ActionSuggestionsOutput }).output}
+                          agent={config.name}
+                          briefId={briefId ?? null}
+                          threadId={threadId}
                         />
                       );
                     }
