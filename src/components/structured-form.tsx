@@ -11,22 +11,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { AGENTS, type AgentId } from "@/lib/heart-sell";
+import { AGENTS, type AgentId, type StructuredField } from "@/lib/heart-sell";
 
 export function StructuredForm({
   agent,
+  fields: fieldsProp,
   initialValues,
   submitLabel,
   onSubmit,
   secondaryAction,
 }: {
   agent: AgentId;
+  fields?: StructuredField[];
   initialValues?: Record<string, string>;
   submitLabel: string;
   onSubmit: (values: Record<string, string>) => void | Promise<void>;
   secondaryAction?: { label: string; onClick: (values: Record<string, string>) => void | Promise<void> };
 }) {
-  const fields = AGENTS[agent].fields;
+  const fields = fieldsProp ?? AGENTS[agent].fields;
   const [values, setValues] = useState<Record<string, string>>(() => {
     const base: Record<string, string> = {};
     for (const field of fields) base[field.name] = initialValues?.[field.name] ?? "";
