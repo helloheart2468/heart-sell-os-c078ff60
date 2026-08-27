@@ -50,39 +50,141 @@ export const DEFAULT_DRIPIFY_COLUMNS: DripifyColumns = {
   email: false,
 };
 
+/** Field keys in the order Dripify reads them. */
+export type DripifyField =
+  | "linkedin_url"
+  | "first_name"
+  | "last_name"
+  | "full_name"
+  | "company"
+  | "title"
+  | "email"
+  | "connection_note"
+  | "message_1"
+  | "message_2";
+
+export type DripifyHeaders = Record<DripifyField, string>;
+
+/** Dripify's own column names. The wizard lets people rename these to match their account. */
+export const DRIPIFY_HEADER_PRESETS: { id: string; label: string; headers: DripifyHeaders }[] = [
+  {
+    id: "dripify",
+    label: "Dripify default",
+    headers: {
+      linkedin_url: "Profile Url",
+      first_name: "First Name",
+      last_name: "Last Name",
+      full_name: "Full Name",
+      company: "Company",
+      title: "Job Title",
+      email: "Email",
+      connection_note: "Custom1",
+      message_1: "Custom2",
+      message_2: "Custom3",
+    },
+  },
+  {
+    id: "descriptive",
+    label: "Readable names",
+    headers: {
+      linkedin_url: "Profile Url",
+      first_name: "First Name",
+      last_name: "Last Name",
+      full_name: "Full Name",
+      company: "Company",
+      title: "Job Title",
+      email: "Email",
+      connection_note: "Connection Note",
+      message_1: "Message 1",
+      message_2: "Message 2",
+    },
+  },
+  {
+    id: "snake",
+    label: "Lowercase keys",
+    headers: {
+      linkedin_url: "linkedin_url",
+      first_name: "first_name",
+      last_name: "last_name",
+      full_name: "full_name",
+      company: "company",
+      title: "title",
+      email: "email",
+      connection_note: "connection_note",
+      message_1: "message_1",
+      message_2: "message_2",
+    },
+  },
+];
+
+export const DEFAULT_DRIPIFY_HEADERS: DripifyHeaders = DRIPIFY_HEADER_PRESETS[0]!.headers;
+
+/** Which campaign step feeds which Dripify column. */
+export const SLOT_TO_FIELD: Record<CampaignSlot, DripifyField> = {
+  connection_note: "connection_note",
+  message_1: "message_1",
+  message_2: "message_2",
+};
+
+export type DripifyRow = { prospect: Prospect; values: Record<DripifyField, string> };
+
+export type DripifyResult = {
+  csv: string;
+  fields: DripifyField[];
+  rows: DripifyRow[];
+  included: Prospect[];
+  skipped: Prospect[];
+  emptyMessages: { prospect: Prospect; slot: CampaignSlot }[];
+};
+
 /** Dripify wants a LinkedIn profile URL per row plus any custom message columns. */
 export function dripifyCsv(
   campaign: Campaign,
   prospects: Prospect[],
   personalised: Map<string, string>,
   columns: DripifyColumns = DEFAULT_DRIPIFY_COLUMNS,
-): { csv: string; included: Prospect[]; skipped: Prospect[] } {
+  headers: DripifyHeaders = DEFAULT_DRIPIFY_HEADERS,
+): DripifyResult {
   const included = prospects.filter((prospect) => (prospect.linkedin_url ?? "").trim());
   const skipped = prospects.filter((prospect) => !(prospect.linkedin_url ?? "").trim());
 
-  const header = ["linkedin_url", "first_name", "last_name", "full_name"];
-  if (columns.company) header.push("company");
-  if (columns.title) header.push("title");
-  if (columns.email) header.push("email");
-  if (columns.connection_note) header.push("connection_note");
-  if (columns.message_1) header.push("message_1");
-  if (columns.message_2) header.push("message_2");
+  const fields: DripifyField[] = ["linkedin_url", "first_name", "last_name", "full_name"];
+  if (columns.company) fields.push("company");
+  if (columns.title) fields.push("title");
+  if (columns.email) fields.push("email");
+  if (columns.connection_note) fields.push("connection_note");
+  if (columns.message_1) fields.push("message_1");
+  if (columns.message_2) fields.push("message_2");
 
-  const rows: (string | null)[][] = [header];
-  for (const prospect of included) {
+  const emptyMessages: { prospect: Prospect; slot: CampaignSlot }[] = [];
+  const rows: DripifyRow[] = included.map((prospect) => {
     const { first, last } = splitName(prospect.name);
-    const row: (string | null)[] = [prospect.linkedin_url, first, last, prospect.name];
-    if (columns.company) row.push(prospect.company ?? "");
-    if (columns.title) row.push(prospect.title ?? "");
-    if (columns.email) row.push(prospect.email ?? "");
-    const push = (slot: CampaignSlot) => row.push(bodyFor(campaign, slot, personalised, prospect.id));
-    if (columns.connection_note) push("connection_note");
-    if (columns.message_1) push("message_1");
-    if (columns.message_2) push("message_2");
-    rows.push(row);
-  }
+    const message = (slot: CampaignSlot) => {
+      const body = bodyFor(campaign, slot, personalised, prospect.id).trim();
+      if (!body) emptyMessages.push({ prospect, slot });
+      return body;
+    };
+    const values: Record<DripifyField, string> = {
+      linkedin_url: prospect.linkedin_url ?? "",
+      first_name: first,
+      last_name: last,
+      full_name: prospect.name,
+      company: prospect.company ?? "",
+      title: prospect.title ?? "",
+      email: prospect.email ?? "",
+      connection_note: columns.connection_note ? message("connection_note") : "",
+      message_1: columns.message_1 ? message("message_1") : "",
+      message_2: columns.message_2 ? message("message_2") : "",
+    };
+    return { prospect, values };
+  });
 
-  return { csv: toCsv(rows), included, skipped };
+  const csv = toCsv([
+    fields.map((field) => headers[field]),
+    ...rows.map((row) => fields.map((field) => row.values[field])),
+  ]);
+
+  return { csv, fields, rows, included, skipped, emptyMessages };
 }
 
 export type VaRow = {
