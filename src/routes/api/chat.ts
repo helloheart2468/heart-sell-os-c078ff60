@@ -260,7 +260,9 @@ export const Route = createFileRoute("/api/chat")({
 
         const { data: business } = await supabase
           .from("business_profile")
-          .select("business_summary, problems_solved, unfair_advantage, story_notes")
+          .select(
+        "business_summary, problems_solved, unfair_advantage, story_notes, greeting, sign_off, booking_link, communication_style",
+      )
           .maybeSingle();
 
         const apiKey = process.env["LOVABLE_API_KEY"];

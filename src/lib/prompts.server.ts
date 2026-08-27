@@ -160,6 +160,10 @@ const BUSINESS_LABELS: Record<string, string> = {
   problems_solved: "Problems they solve",
   unfair_advantage: "Unfair advantage",
   story_notes: "Story notes",
+  greeting: "Preferred greeting (use verbatim to open messages)",
+  sign_off: "Preferred sign-off (use verbatim to close messages)",
+  booking_link: "Booking link (use this exact link whenever you offer a call)",
+  communication_style: "How they sound (match this voice in every draft)",
 };
 
 export function buildSystemPrompt(
@@ -192,8 +196,16 @@ export function buildSystemPrompt(
         .join("\n")
     : "";
 
+  const voiceRule =
+    business &&
+    ["greeting", "sign_off", "booking_link", "communication_style"].some((key) =>
+      (business[key] ?? "").toString().trim(),
+    )
+      ? "\n\nVOICE RULES: open and close every drafted message with their stated greeting and sign-off exactly as written, match their stated communication style, and use their booking link verbatim when offering a call. If they have not given a booking link, ask for times instead of inventing one."
+      : "";
+
   const core = businessBlock
-    ? `\n\nTHE BUSINESS BEHIND EVERY OFFER (true across all their offers):\n${businessBlock}`
+    ? `\n\nTHE BUSINESS BEHIND EVERY OFFER (true across all their offers):\n${businessBlock}${voiceRule}`
     : "";
 
   const offerName = (brief?.["name"] ?? "").toString().trim();
