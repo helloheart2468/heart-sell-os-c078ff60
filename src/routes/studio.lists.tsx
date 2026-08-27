@@ -121,6 +121,31 @@ function ListsPage() {
     }
   };
 
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [enriching, setEnriching] = useState(false);
+  const runEnrich = useServerFn(enrichProspectsBulk);
+
+  const enrich = async () => {
+    const ids = [...selected].slice(0, 10);
+    if (ids.length === 0) return;
+    setEnriching(true);
+    try {
+      const result = await runEnrich({ data: { prospectIds: ids } });
+      const filled = result.entries.filter((entry) => entry.updated > 0).length;
+      await refresh();
+      toast.success(
+        filled > 0
+          ? `Filled in details for ${filled} ${filled === 1 ? "person" : "people"}.`
+          : "Nothing new found in public sources — those records are as complete as we can verify.",
+      );
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Lookup failed.");
+    } finally {
+      setEnriching(false);
+    }
+  };
+
+
   const draftWithHooks = async (prospectId: string, approved: string) => {
     const prospect = visible.find((row) => row.id === prospectId);
     if (!prospect) return;
