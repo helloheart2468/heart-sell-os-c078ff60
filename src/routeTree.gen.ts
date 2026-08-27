@@ -17,6 +17,7 @@ import { Route as StudioIndexRouteImport } from './routes/studio.index'
 import { Route as StudioThreadIdRouteImport } from './routes/studio.$threadId'
 import { Route as StudioBusinessRouteImport } from './routes/studio.business'
 import { Route as StudioListsRouteImport } from './routes/studio.lists'
+import { Route as StudioOffersRouteImport } from './routes/studio.offers'
 import { Route as StudioPathRouteImport } from './routes/studio.path'
 import { Route as StudioBriefIndexRouteImport } from './routes/studio.brief.index'
 import { Route as StudioBriefBriefIdRouteImport } from './routes/studio.brief.$briefId'
@@ -61,6 +62,11 @@ const StudioListsRoute = StudioListsRouteImport.update({
   path: '/lists',
   getParentRoute: () => StudioRoute,
 } as any)
+const StudioOffersRoute = StudioOffersRouteImport.update({
+  id: '/offers',
+  path: '/offers',
+  getParentRoute: () => StudioRoute,
+} as any)
 const StudioPathRoute = StudioPathRouteImport.update({
   id: '/path',
   path: '/path',
@@ -85,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/business': typeof StudioBusinessRoute
   '/studio/lists': typeof StudioListsRoute
+  '/studio/offers': typeof StudioOffersRoute
   '/studio/path': typeof StudioPathRoute
   '/studio/': typeof StudioIndexRoute
   '/studio/brief/$briefId': typeof StudioBriefBriefIdRoute
@@ -97,6 +104,7 @@ export interface FileRoutesByTo {
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/business': typeof StudioBusinessRoute
   '/studio/lists': typeof StudioListsRoute
+  '/studio/offers': typeof StudioOffersRoute
   '/studio/path': typeof StudioPathRoute
   '/studio': typeof StudioIndexRoute
   '/studio/brief/$briefId': typeof StudioBriefBriefIdRoute
@@ -111,6 +119,7 @@ export interface FileRoutesById {
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/business': typeof StudioBusinessRoute
   '/studio/lists': typeof StudioListsRoute
+  '/studio/offers': typeof StudioOffersRoute
   '/studio/path': typeof StudioPathRoute
   '/studio/': typeof StudioIndexRoute
   '/studio/brief/$briefId': typeof StudioBriefBriefIdRoute
@@ -126,6 +135,7 @@ export interface FileRouteTypes {
     | '/studio/$threadId'
     | '/studio/business'
     | '/studio/lists'
+    | '/studio/offers'
     | '/studio/path'
     | '/studio/'
     | '/studio/brief/$briefId'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/studio/$threadId'
     | '/studio/business'
     | '/studio/lists'
+    | '/studio/offers'
     | '/studio/path'
     | '/studio'
     | '/studio/brief/$briefId'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/studio/$threadId'
     | '/studio/business'
     | '/studio/lists'
+    | '/studio/offers'
     | '/studio/path'
     | '/studio/'
     | '/studio/brief/$briefId'
@@ -222,6 +234,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioListsRouteImport
       parentRoute: typeof StudioRoute
     }
+    '/studio/offers': {
+      id: '/studio/offers'
+      path: '/offers'
+      fullPath: '/studio/offers'
+      preLoaderRoute: typeof StudioOffersRouteImport
+      parentRoute: typeof StudioRoute
+    }
     '/studio/path': {
       id: '/studio/path'
       path: '/path'
@@ -250,6 +269,7 @@ interface StudioRouteChildren {
   StudioThreadIdRoute: typeof StudioThreadIdRoute
   StudioBusinessRoute: typeof StudioBusinessRoute
   StudioListsRoute: typeof StudioListsRoute
+  StudioOffersRoute: typeof StudioOffersRoute
   StudioPathRoute: typeof StudioPathRoute
   StudioIndexRoute: typeof StudioIndexRoute
   StudioBriefBriefIdRoute: typeof StudioBriefBriefIdRoute
@@ -260,6 +280,7 @@ const StudioRouteChildren: StudioRouteChildren = {
   StudioThreadIdRoute: StudioThreadIdRoute,
   StudioBusinessRoute: StudioBusinessRoute,
   StudioListsRoute: StudioListsRoute,
+  StudioOffersRoute: StudioOffersRoute,
   StudioPathRoute: StudioPathRoute,
   StudioIndexRoute: StudioIndexRoute,
   StudioBriefBriefIdRoute: StudioBriefBriefIdRoute,
