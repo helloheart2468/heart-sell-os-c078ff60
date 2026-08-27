@@ -198,6 +198,12 @@ function StudioLayout() {
               </span>
             ) : null}
           </Link>
+          <Link
+            to="/studio/playbook"
+            className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+          >
+            My playbook
+          </Link>
 
         </div>
 
