@@ -381,7 +381,13 @@ export const AGENT_LIST: Agent[] = [
 ];
 
 export function isAgentId(value: string): value is AgentId {
-  return value === "sage" || value === "scout" || value === "quill" || value === "ace";
+  return (
+    value === "guide" ||
+    value === "sage" ||
+    value === "scout" ||
+    value === "quill" ||
+    value === "ace"
+  );
 }
 
 export function buildStructuredMessage(
