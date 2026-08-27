@@ -9,6 +9,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AGENTS, isAgentId } from "@/lib/heart-sell";
 import { useOffers } from "@/lib/offers";
+import { listTodos } from "@/lib/todos";
 import {
   listThreads,
   renameThread,
