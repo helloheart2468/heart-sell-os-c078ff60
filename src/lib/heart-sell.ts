@@ -1,4 +1,4 @@
-export type AgentId = "sage" | "scout" | "quill" | "ace";
+export type AgentId = "guide" | "sage" | "scout" | "quill" | "ace";
 
 export type FieldType = "text" | "textarea" | "select";
 
