@@ -21,6 +21,27 @@ export const SLOTS: { slot: CampaignSlot; label: string; hint: string; limit?: n
   },
 ];
 
+export type CampaignPurpose = "evergreen" | "event" | "launch" | "reengage";
+
+export const PURPOSES: { value: CampaignPurpose; label: string; hint: string }[] = [
+  {
+    value: "evergreen",
+    label: "Ongoing outreach",
+    hint: "Steady conversations with people who fit this offer.",
+  },
+  {
+    value: "event",
+    label: "Event or workshop",
+    hint: "Invite people to something specific with a date attached.",
+  },
+  { value: "launch", label: "Launch or new offer", hint: "A window around something new." },
+  {
+    value: "reengage",
+    label: "Re-engage past contacts",
+    hint: "People you've spoken to before and want to reopen.",
+  },
+];
+
 export type Campaign = {
   id: string;
   brief_id: string | null;
@@ -28,6 +49,11 @@ export type Campaign = {
   name: string;
   channel: string;
   status: string;
+  purpose: CampaignPurpose;
+  event_name: string | null;
+  event_date: string | null;
+  event_format: string | null;
+  event_link: string | null;
   connection_note: string | null;
   message_1: string | null;
   message_2: string | null;
@@ -45,7 +71,7 @@ export type CampaignMessage = {
 };
 
 const CAMPAIGN_COLUMNS =
-  "id, brief_id, list_id, name, channel, status, connection_note, message_1, message_2, created_at, updated_at";
+  "id, brief_id, list_id, name, channel, status, purpose, event_name, event_date, event_format, event_link, connection_note, message_1, message_2, created_at, updated_at";
 
 async function currentUserId() {
   const { data } = await supabase.auth.getUser();
@@ -77,6 +103,11 @@ export async function createCampaign(input: {
   listId: string | null;
   briefId: string | null;
   channel: string;
+  purpose?: CampaignPurpose;
+  eventName?: string | null;
+  eventDate?: string | null;
+  eventFormat?: string | null;
+  eventLink?: string | null;
 }): Promise<Campaign> {
   const userId = await currentUserId();
   const { data, error } = await supabase
@@ -87,6 +118,11 @@ export async function createCampaign(input: {
       list_id: input.listId,
       brief_id: input.briefId,
       channel: input.channel,
+      purpose: input.purpose ?? "evergreen",
+      event_name: input.eventName ?? null,
+      event_date: input.eventDate ?? null,
+      event_format: input.eventFormat ?? null,
+      event_link: input.eventLink ?? null,
     })
     .select(CAMPAIGN_COLUMNS)
     .single();

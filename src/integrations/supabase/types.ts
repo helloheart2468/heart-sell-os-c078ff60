@@ -220,11 +220,16 @@ export type Database = {
           channel: string
           connection_note: string | null
           created_at: string
+          event_date: string | null
+          event_format: string | null
+          event_link: string | null
+          event_name: string | null
           id: string
           list_id: string | null
           message_1: string | null
           message_2: string | null
           name: string
+          purpose: string
           status: string
           updated_at: string
           user_id: string
@@ -234,11 +239,16 @@ export type Database = {
           channel?: string
           connection_note?: string | null
           created_at?: string
+          event_date?: string | null
+          event_format?: string | null
+          event_link?: string | null
+          event_name?: string | null
           id?: string
           list_id?: string | null
           message_1?: string | null
           message_2?: string | null
           name: string
+          purpose?: string
           status?: string
           updated_at?: string
           user_id: string
@@ -248,11 +258,16 @@ export type Database = {
           channel?: string
           connection_note?: string | null
           created_at?: string
+          event_date?: string | null
+          event_format?: string | null
+          event_link?: string | null
+          event_name?: string | null
           id?: string
           list_id?: string | null
           message_1?: string | null
           message_2?: string | null
           name?: string
+          purpose?: string
           status?: string
           updated_at?: string
           user_id?: string
@@ -308,6 +323,50 @@ export type Database = {
             columns: ["thread_id"]
             isOneToOne: false
             referencedRelation: "threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      playbooks: {
+        Row: {
+          brief_id: string | null
+          created_at: string
+          goal: Json
+          id: string
+          sections: Json
+          status: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          brief_id?: string | null
+          created_at?: string
+          goal?: Json
+          id?: string
+          sections?: Json
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          brief_id?: string | null
+          created_at?: string
+          goal?: Json
+          id?: string
+          sections?: Json
+          status?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "playbooks_brief_id_fkey"
+            columns: ["brief_id"]
+            isOneToOne: false
+            referencedRelation: "audience_briefs"
             referencedColumns: ["id"]
           },
         ]
@@ -402,6 +461,7 @@ export type Database = {
           company: string | null
           created_at: string
           email: string | null
+          enrichment_state: string
           follow_up_state: string
           id: string
           last_touch_at: string | null
@@ -414,6 +474,7 @@ export type Database = {
           notes: string | null
           sequence_step: number
           social_url: string | null
+          source: string
           sources: Json
           status: string
           temperature: string
@@ -433,6 +494,7 @@ export type Database = {
           company?: string | null
           created_at?: string
           email?: string | null
+          enrichment_state?: string
           follow_up_state?: string
           id?: string
           last_touch_at?: string | null
@@ -445,6 +507,7 @@ export type Database = {
           notes?: string | null
           sequence_step?: number
           social_url?: string | null
+          source?: string
           sources?: Json
           status?: string
           temperature?: string
@@ -464,6 +527,7 @@ export type Database = {
           company?: string | null
           created_at?: string
           email?: string | null
+          enrichment_state?: string
           follow_up_state?: string
           id?: string
           last_touch_at?: string | null
@@ -476,6 +540,7 @@ export type Database = {
           notes?: string | null
           sequence_step?: number
           social_url?: string | null
+          source?: string
           sources?: Json
           status?: string
           temperature?: string

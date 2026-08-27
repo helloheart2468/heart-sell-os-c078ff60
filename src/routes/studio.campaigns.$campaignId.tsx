@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { DripifyWizard } from "@/components/dripify-wizard";
+import { TeamPack } from "@/components/team-pack";
 import { FollowUpStrip } from "@/components/followup-strip";
 import {
   bodyFor,
@@ -47,6 +48,7 @@ function CampaignDetail() {
   const [draftBody, setDraftBody] = useState("");
   const [showExport, setShowExport] = useState(false);
   const [showPack, setShowPack] = useState(false);
+  const [showTeamPack, setShowTeamPack] = useState(false);
 
   const campaign = useQuery({
     queryKey: ["campaign", campaignId],
@@ -105,6 +107,19 @@ Write the **${meta.label}** for this campaign. ${meta.hint}${
 
 The rest of the sequence so far:
 ${others}
+${
+      data.purpose === "event"
+        ? `\nThis campaign is an invitation to ${data.event_name || "an event"}${
+            data.event_date ? ` on ${data.event_date}` : ""
+          }${data.event_format ? ` (${data.event_format})` : ""}${
+            data.event_link ? `. Registration: ${data.event_link}` : ""
+          }. The ask is attendance, not a sale — invite them because it genuinely helps them.`
+        : data.purpose === "launch"
+          ? "\nThis campaign is around a launch, so there is a reason to reach out now — but the first message is still a conversation, not a pitch."
+          : data.purpose === "reengage"
+            ? "\nThese are people I've spoken to before, so reference that history honestly rather than opening cold."
+            : ""
+    }
 
 Keep it in my voice, follow CCRA and the 7-Day Sales Path, and use [name]/[company] placeholders where a detail should be personalised. Never invent a commonality.`;
     const threadId = await startSession("quill", "chat", prompt, `${data.name} · ${meta.label}`, data.brief_id);
@@ -223,6 +238,13 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
                 className="h-10 rounded-full border border-border px-5 text-foreground hover:bg-muted"
               >
                 Send-it-yourself pack
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowTeamPack(true)}
+                className="h-10 rounded-full border border-border px-5 text-foreground hover:bg-muted"
+              >
+                Prepare this for my team
               </button>
             </div>
           </div>
@@ -381,6 +403,14 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
           </div>
         </section>
       </div>
+
+      <TeamPack
+        open={showTeamPack}
+        onOpenChange={setShowTeamPack}
+        campaign={data}
+        prospects={rows}
+        personalised={personalised}
+      />
     </main>
   );
 }

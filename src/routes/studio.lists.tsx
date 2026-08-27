@@ -1,7 +1,15 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronDown, ChevronUp, ExternalLink, Sparkles, Trash2 } from "lucide-react";
+import {
+  ChevronDown,
+  ChevronUp,
+  ExternalLink,
+  Sparkles,
+  Trash2,
+  Upload,
+  Wand2,
+} from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -10,6 +18,8 @@ import {
   type BulkResearchEntry,
 } from "@/components/bulk-research";
 import { FollowUpStrip } from "@/components/followup-strip";
+import { ListUpload } from "@/components/list-upload";
+import { enrichProspectsBulk } from "@/lib/enrich.functions";
 import { startSession } from "@/lib/handoff";
 
 import { BUCKET_LABELS, bucketFor, formatDue } from "@/lib/followups";
@@ -121,6 +131,31 @@ function ListsPage() {
     }
   };
 
+  const [uploadOpen, setUploadOpen] = useState(false);
+  const [enriching, setEnriching] = useState(false);
+  const runEnrich = useServerFn(enrichProspectsBulk);
+
+  const enrich = async () => {
+    const ids = [...selected].slice(0, 10);
+    if (ids.length === 0) return;
+    setEnriching(true);
+    try {
+      const result = await runEnrich({ data: { prospectIds: ids } });
+      const filled = result.entries.filter((entry) => (entry.applied?.length ?? 0) > 0).length;
+      await refresh();
+      toast.success(
+        filled > 0
+          ? `Filled in details for ${filled} ${filled === 1 ? "person" : "people"}.`
+          : "Nothing new found in public sources — those records are as complete as we can verify.",
+      );
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Lookup failed.");
+    } finally {
+      setEnriching(false);
+    }
+  };
+
+
   const draftWithHooks = async (prospectId: string, approved: string) => {
     const prospect = visible.find((row) => row.id === prospectId);
     if (!prospect) return;
@@ -166,7 +201,18 @@ function ListsPage() {
           ) : null}
         </div>
 
+        <div className="mt-6 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setUploadOpen(true)}
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-border px-5 text-foreground hover:bg-muted"
+          >
+            <Upload className="h-4 w-4" /> Upload a list I already have
+          </button>
+        </div>
+
         <div className="mt-8 flex flex-wrap gap-2">
+
           <button
             type="button"
             onClick={() => setActiveList("all")}
@@ -238,8 +284,18 @@ function ListsPage() {
               ? "Researching…"
               : `Research commonality & compliment${selected.size ? ` (${selected.size})` : ""}`}
           </button>
+          <button
+            type="button"
+            onClick={() => void enrich()}
+            disabled={selected.size === 0 || enriching}
+            className="inline-flex h-9 items-center gap-2 rounded-full border border-border px-4 text-foreground hover:bg-muted disabled:opacity-40"
+          >
+            <Wand2 className="h-4 w-4" />
+            {enriching ? "Looking them up…" : "Fill in missing details"}
+          </button>
           <span className="text-muted-foreground">Up to 10 at a time.</span>
         </div>
+
 
         <BulkResearchResults entries={entries} onDraft={(id, approved) => void draftWithHooks(id, approved)} />
 
@@ -386,11 +442,22 @@ function ListsPage() {
 
           {prospects.data?.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border p-8 text-center text-muted-foreground">
-              Nothing saved yet. Ask Scout to find people and save the ones you like.
+              Nothing saved yet. Ask Scout to find people, or upload a list you already have.
             </div>
           ) : null}
         </div>
       </div>
+
+      <ListUpload
+        open={uploadOpen}
+        onOpenChange={setUploadOpen}
+        lists={lists.data ?? []}
+        briefId={currentId ?? null}
+        onImported={async (listId) => {
+          setActiveList(listId);
+          await refresh();
+        }}
+      />
     </main>
   );
 }

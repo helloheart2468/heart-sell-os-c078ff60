@@ -130,6 +130,33 @@ function StudioHome() {
           </Link>
         </div>
 
+        <section className="mt-10">
+          <h2 className="font-display text-2xl text-foreground">Start from something you have</h2>
+          <p className="mt-1 text-muted-foreground">
+            A list in a spreadsheet, an event coming up, or a manual you want to hand over.
+          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              to="/studio/lists"
+              className="flex h-10 items-center rounded-full border border-border px-5 text-foreground hover:bg-muted"
+            >
+              Upload a list I already have
+            </Link>
+            <Link
+              to="/studio/campaigns"
+              className="flex h-10 items-center rounded-full border border-border px-5 text-foreground hover:bg-muted"
+            >
+              Outreach for an event or workshop
+            </Link>
+            <Link
+              to="/studio/playbook"
+              className="flex h-10 items-center rounded-full border border-border px-5 text-foreground hover:bg-muted"
+            >
+              Build my Heart Sell playbook
+            </Link>
+          </div>
+        </section>
+
         <div className="mt-10 grid gap-5 sm:grid-cols-2">
           {AGENT_LIST.map((agent) => (
             <article key={agent.id} className="paper-panel flex flex-col p-6">

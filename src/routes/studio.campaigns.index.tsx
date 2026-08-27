@@ -3,7 +3,13 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
 
-import { createCampaign, deleteCampaign, listCampaigns } from "@/lib/campaigns";
+import {
+  createCampaign,
+  deleteCampaign,
+  listCampaigns,
+  PURPOSES,
+  type CampaignPurpose,
+} from "@/lib/campaigns";
 import { useOffers } from "@/lib/offers";
 import { listProspectLists } from "@/lib/prospects";
 
@@ -35,6 +41,11 @@ function CampaignsPage() {
   const [name, setName] = useState("");
   const [listId, setListId] = useState("");
   const [channel, setChannel] = useState("linkedin");
+  const [purpose, setPurpose] = useState<CampaignPurpose>("evergreen");
+  const [eventName, setEventName] = useState("");
+  const [eventDate, setEventDate] = useState("");
+  const [eventFormat, setEventFormat] = useState("");
+  const [eventLink, setEventLink] = useState("");
 
   const campaigns = useQuery({
     queryKey: ["campaigns", currentId ?? "all"],
@@ -52,6 +63,11 @@ function CampaignsPage() {
         listId: listId || null,
         briefId: currentId,
         channel,
+        purpose,
+        eventName: eventName.trim() || null,
+        eventDate: eventDate.trim() || null,
+        eventFormat: eventFormat.trim() || null,
+        eventLink: eventLink.trim() || null,
       }),
     onSuccess: async (campaign) => {
       setName("");
@@ -121,6 +137,63 @@ function CampaignsPage() {
               Create
             </button>
           </div>
+          <div className="mt-4">
+            <p className="text-muted-foreground">What is this campaign for?</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {PURPOSES.map((entry) => (
+                <button
+                  key={entry.value}
+                  type="button"
+                  onClick={() => setPurpose(entry.value)}
+                  title={entry.hint}
+                  className={`h-9 rounded-full border px-4 ${
+                    purpose === entry.value
+                      ? "border-primary bg-primary text-primary-foreground"
+                      : "border-border text-foreground hover:bg-muted"
+                  }`}
+                >
+                  {entry.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-muted-foreground">
+              {PURPOSES.find((entry) => entry.value === purpose)?.hint}
+            </p>
+          </div>
+
+          {purpose === "event" ? (
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <input
+                value={eventName}
+                onChange={(event) => setEventName(event.target.value)}
+                placeholder="Event or workshop name"
+                aria-label="Event name"
+                className="h-10 rounded-lg border border-input bg-background px-3 text-foreground"
+              />
+              <input
+                value={eventDate}
+                onChange={(event) => setEventDate(event.target.value)}
+                placeholder="When is it? e.g. 14 October, 2pm ET"
+                aria-label="Event date"
+                className="h-10 rounded-lg border border-input bg-background px-3 text-foreground"
+              />
+              <input
+                value={eventFormat}
+                onChange={(event) => setEventFormat(event.target.value)}
+                placeholder="Format — live workshop, webinar, dinner…"
+                aria-label="Event format"
+                className="h-10 rounded-lg border border-input bg-background px-3 text-foreground"
+              />
+              <input
+                value={eventLink}
+                onChange={(event) => setEventLink(event.target.value)}
+                placeholder="Registration link (optional)"
+                aria-label="Event link"
+                className="h-10 rounded-lg border border-input bg-background px-3 text-foreground"
+              />
+            </div>
+          ) : null}
+
           {(lists.data ?? []).length === 0 ? (
             <p className="mt-3 text-muted-foreground">
               No lists yet — build one with Scout on{" "}
@@ -146,6 +219,10 @@ function CampaignsPage() {
                 <p className="text-muted-foreground">
                   {listName(campaign.list_id)} ·{" "}
                   {campaign.channel === "email" ? "Email" : "LinkedIn"}
+                  {campaign.purpose && campaign.purpose !== "evergreen"
+                    ? ` · ${PURPOSES.find((entry) => entry.value === campaign.purpose)?.label ?? campaign.purpose}`
+                    : ""}
+                  {campaign.event_name ? ` · ${campaign.event_name}` : ""}
                 </p>
               </div>
               <Link

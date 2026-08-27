@@ -50,6 +50,13 @@
       "when": 1787829312854,
       "tag": "0006_link_touches_to_campaigns",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1787829987297,
+      "tag": "0007_playbooks_campaign_purpose_prospect_source",
+      "breakpoints": true
     }
   ]
 }

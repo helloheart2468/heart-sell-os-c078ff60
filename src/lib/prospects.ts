@@ -38,7 +38,8 @@ export type Prospect = {
   call_at: string | null;
   campaign_id: string | null;
   campaign_slot: string | null;
-
+  source: string;
+  enrichment_state: string;
 };
 
 
@@ -58,7 +59,7 @@ export type NewProspect = {
 };
 
 const PROSPECT_COLUMNS =
-  "id, brief_id, list_id, name, title, company, blurb, location, linkedin_url, social_url, website, email, audience, temperature, status, why_fits, notes, created_at, follow_up_state, sequence_step, last_touch_at, next_action_at, next_action_kind, call_at, campaign_id, campaign_slot";
+  "id, brief_id, list_id, name, title, company, blurb, location, linkedin_url, social_url, website, email, audience, temperature, status, why_fits, notes, created_at, follow_up_state, sequence_step, last_touch_at, next_action_at, next_action_kind, call_at, campaign_id, campaign_slot, source, enrichment_state";
 
 
 
@@ -119,7 +120,13 @@ export async function createProspectList(input: {
 
 export async function saveProspects(
   prospects: NewProspect[],
-  options: { listId: string; audience: string; temperature: string; briefId?: string | null },
+  options: {
+    listId: string;
+    audience: string;
+    temperature: string;
+    briefId?: string | null;
+    source?: string;
+  },
 ): Promise<number> {
   if (prospects.length === 0) return 0;
   const userId = await currentUserId();
@@ -139,6 +146,7 @@ export async function saveProspects(
     why_fits: prospect.why_fits ?? null,
     audience: prospect.audience ?? options.audience,
     temperature: prospect.temperature ?? options.temperature,
+    source: options.source ?? "scout",
   }));
   const { error } = await supabase.from("prospects").insert(rows);
   if (error) throw error;
