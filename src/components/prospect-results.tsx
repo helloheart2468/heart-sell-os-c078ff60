@@ -188,8 +188,9 @@ export function ProspectResults({
                   ) : null}
                   <span className="mt-2 flex flex-wrap gap-3">
                     {[
-                      ["LinkedIn", prospect.linkedin_url],
-                      ["Social", prospect.social_url],
+                      ...socialLinks(prospect).map(
+                        (link) => [link.platform, link.url] as [string, string],
+                      ),
                       ["Website", prospect.website],
                     ]
                       .filter(([, href]) => Boolean(href))
