@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack/react-router";
+import { ChevronRight } from "lucide-react";
 import { useEffect } from "react";
 
 import mark from "@/assets/heart-sell-mark.png";
@@ -7,6 +8,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { AGENTS, isAgentId } from "@/lib/heart-sell";
 import { listThreads } from "@/lib/threads";
+
+const GROUP_ORDER = ["guide", "sage", "scout", "quill", "ace", "other"] as const;
 
 export const Route = createFileRoute("/studio")({
   component: StudioLayout,
