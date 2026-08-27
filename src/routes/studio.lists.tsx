@@ -166,7 +166,18 @@ function ListsPage() {
           ) : null}
         </div>
 
+        <div className="mt-6 flex flex-wrap gap-2">
+          <button
+            type="button"
+            onClick={() => setUploadOpen(true)}
+            className="inline-flex h-10 items-center gap-2 rounded-full border border-border px-5 text-foreground hover:bg-muted"
+          >
+            <Upload className="h-4 w-4" /> Upload a list I already have
+          </button>
+        </div>
+
         <div className="mt-8 flex flex-wrap gap-2">
+
           <button
             type="button"
             onClick={() => setActiveList("all")}
