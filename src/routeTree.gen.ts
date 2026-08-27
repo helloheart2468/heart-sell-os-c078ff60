@@ -16,6 +16,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as StudioIndexRouteImport } from './routes/studio.index'
 import { Route as StudioThreadIdRouteImport } from './routes/studio.$threadId'
 import { Route as StudioBusinessRouteImport } from './routes/studio.business'
+import { Route as StudioFollowupsRouteImport } from './routes/studio.followups'
 import { Route as StudioListsRouteImport } from './routes/studio.lists'
 import { Route as StudioOffersRouteImport } from './routes/studio.offers'
 import { Route as StudioPathRouteImport } from './routes/studio.path'
@@ -58,6 +59,11 @@ const StudioBusinessRoute = StudioBusinessRouteImport.update({
   path: '/business',
   getParentRoute: () => StudioRoute,
 } as any)
+const StudioFollowupsRoute = StudioFollowupsRouteImport.update({
+  id: '/followups',
+  path: '/followups',
+  getParentRoute: () => StudioRoute,
+} as any)
 const StudioListsRoute = StudioListsRouteImport.update({
   id: '/lists',
   path: '/lists',
@@ -96,6 +102,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/business': typeof StudioBusinessRoute
+  '/studio/followups': typeof StudioFollowupsRoute
   '/studio/lists': typeof StudioListsRoute
   '/studio/offers': typeof StudioOffersRoute
   '/studio/path': typeof StudioPathRoute
@@ -110,6 +117,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/business': typeof StudioBusinessRoute
+  '/studio/followups': typeof StudioFollowupsRoute
   '/studio/lists': typeof StudioListsRoute
   '/studio/offers': typeof StudioOffersRoute
   '/studio/path': typeof StudioPathRoute
@@ -126,6 +134,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/business': typeof StudioBusinessRoute
+  '/studio/followups': typeof StudioFollowupsRoute
   '/studio/lists': typeof StudioListsRoute
   '/studio/offers': typeof StudioOffersRoute
   '/studio/path': typeof StudioPathRoute
@@ -143,6 +152,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/studio/$threadId'
     | '/studio/business'
+    | '/studio/followups'
     | '/studio/lists'
     | '/studio/offers'
     | '/studio/path'
@@ -157,6 +167,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/studio/$threadId'
     | '/studio/business'
+    | '/studio/followups'
     | '/studio/lists'
     | '/studio/offers'
     | '/studio/path'
@@ -172,6 +183,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/studio/$threadId'
     | '/studio/business'
+    | '/studio/followups'
     | '/studio/lists'
     | '/studio/offers'
     | '/studio/path'
@@ -239,6 +251,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioBusinessRouteImport
       parentRoute: typeof StudioRoute
     }
+    '/studio/followups': {
+      id: '/studio/followups'
+      path: '/followups'
+      fullPath: '/studio/followups'
+      preLoaderRoute: typeof StudioFollowupsRouteImport
+      parentRoute: typeof StudioRoute
+    }
     '/studio/lists': {
       id: '/studio/lists'
       path: '/lists'
@@ -287,6 +306,7 @@ declare module '@tanstack/react-router' {
 interface StudioRouteChildren {
   StudioThreadIdRoute: typeof StudioThreadIdRoute
   StudioBusinessRoute: typeof StudioBusinessRoute
+  StudioFollowupsRoute: typeof StudioFollowupsRoute
   StudioListsRoute: typeof StudioListsRoute
   StudioOffersRoute: typeof StudioOffersRoute
   StudioPathRoute: typeof StudioPathRoute
@@ -299,6 +319,7 @@ interface StudioRouteChildren {
 const StudioRouteChildren: StudioRouteChildren = {
   StudioThreadIdRoute: StudioThreadIdRoute,
   StudioBusinessRoute: StudioBusinessRoute,
+  StudioFollowupsRoute: StudioFollowupsRoute,
   StudioListsRoute: StudioListsRoute,
   StudioOffersRoute: StudioOffersRoute,
   StudioPathRoute: StudioPathRoute,
