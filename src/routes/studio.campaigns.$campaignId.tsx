@@ -81,25 +81,36 @@ function CampaignDetail() {
 
   const rows = prospects.data ?? [];
   const data = campaign.data;
+  const slots = slotsFor(data?.channel ?? "linkedin", data?.warmth ?? "cold");
   const missingLinkedIn = rows.filter((prospect) => !(prospect.linkedin_url ?? "").trim());
 
   const vaRows = (slot: CampaignSlot): VaRow[] =>
     rows.map((prospect) => ({
       prospect,
       message: data ? bodyFor(data, slot, personalised, prospect.id) : "",
-      channel: data?.channel === "email" ? "Email" : "LinkedIn",
+      channel: data ? channelLabel(data.channel) : "LinkedIn",
       campaignName: data?.name ?? "Campaign",
     }));
 
   const draftTemplateWithQuill = async (slot: CampaignSlot) => {
     if (!data) return;
-    const meta = SLOTS.find((entry) => entry.slot === slot)!;
-    const others = SLOTS.filter((entry) => entry.slot !== slot)
+    const meta = slots.find((entry) => entry.slot === slot)!;
+    const others = slots.filter((entry) => entry.slot !== slot)
       .map((entry) => `${entry.label}:\n${(data[entry.slot] ?? "(not written yet)").trim()}`)
       .join("\n\n");
-    const prompt = `I'm building an outreach campaign called "${data.name}" on ${
-      data.channel === "email" ? "email" : "LinkedIn"
-    }.
+    const prompt = `I'm building an outreach campaign called "${data.name}" on ${channelLabel(
+      data.channel,
+    )}.${
+      isDm(data.channel)
+        ? ` This is a direct message, not LinkedIn or email — keep it phone-length and conversational, the way a real person types in a DM. No formatting, no bullet points, no links in the first message.${
+            data.warmth === "warm"
+              ? " These people already know me, so open by picking the thread back up honestly."
+              : " These people do NOT know me, so the first message has to earn the reply on its own: one specific, true observation about them and one easy question. No pitch and no ask for time yet."
+          }`
+        : data.warmth === "warm"
+          ? " These people already know me — reference the real history rather than opening cold."
+          : ""
+    }
 
 Write the **${meta.label}** for this campaign. ${meta.hint}${
       meta.limit ? ` Hard limit: ${meta.limit} characters.` : ""
@@ -130,7 +141,7 @@ Keep it in my voice, follow CCRA and the 7-Day Sales Path, and use [name]/[compa
     if (!data) return;
     const prospect = rows.find((entry) => entry.id === prospectId);
     if (!prospect) return;
-    const meta = SLOTS.find((entry) => entry.slot === slot)!;
+    const meta = slots.find((entry) => entry.slot === slot)!;
     const prompt = `Personalise one message from my campaign "${data.name}".
 
 ${prospectSummary(prospect)}
@@ -161,7 +172,8 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
         </Link>
         <h1 className="mt-3 font-display text-4xl text-foreground">{data.name}</h1>
         <p className="mt-2 text-muted-foreground">
-          {data.channel === "email" ? "Email" : "LinkedIn"} · {rows.length} people
+          {channelLabel(data.channel)} · {data.warmth === "warm" ? "warm/hot" : "cold"} ·{" "}
+          {rows.length} people
           {missingLinkedIn.length > 0
             ? ` · ${missingLinkedIn.length} missing a LinkedIn URL`
             : ""}

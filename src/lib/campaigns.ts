@@ -21,6 +21,36 @@ export const SLOTS: { slot: CampaignSlot; label: string; hint: string; limit?: n
   },
 ];
 
+/** Slot wording changes by channel — a DM has no connection request. */
+export function slotsFor(channel: string, warmth = "cold") {
+  if (channel === "email") return SLOTS;
+  if (isDm(channel)) {
+    const platform = channelLabel(channel).replace(" DM / Messenger", "").replace(" DM", "");
+    return [
+      {
+        slot: "connection_note" as CampaignSlot,
+        label: warmth === "warm" ? "Opening line" : "First DM",
+        hint:
+          warmth === "warm"
+            ? `Pick the thread back up on ${platform}. Name the real last touch, one or two sentences, no preamble.`
+            : `Cold ${platform} DM. Two or three sentences max, phone-length. Lead with the specific thing you saw — their post, their launch, their work — and ask a question they'd actually want to answer. No pitch, no link, no voice note.`,
+        limit: warmth === "warm" ? undefined : 400,
+      },
+      {
+        slot: "message_1" as CampaignSlot,
+        label: "Message once they reply",
+        hint: "The CCRA touch, DM-sized. Now you can name the reason and offer two specific times.",
+      },
+      {
+        slot: "message_2" as CampaignSlot,
+        label: "Follow-up DM",
+        hint: "One tap on the shoulder, days later. Easy yes, easy no. Never 'just bumping this'.",
+      },
+    ];
+  }
+  return SLOTS;
+}
+
 export type CampaignPurpose = "evergreen" | "event" | "launch" | "reengage";
 
 export const PURPOSES: { value: CampaignPurpose; label: string; hint: string }[] = [
