@@ -280,12 +280,14 @@ function ListsPage() {
 
                 {isExpanded ? (
                   <div id={`prospect-body-${prospect.id}`} className="mt-4 space-y-3 border-t border-border pt-4">
+                    <FollowUpStrip prospect={prospect} briefId={currentId} onChange={refresh} />
                     {prospect.blurb ? (
                       <p className="text-foreground/80">{prospect.blurb}</p>
                     ) : null}
                     {prospect.why_fits ? (
                       <p className="text-muted-foreground">Why they fit: {prospect.why_fits}</p>
                     ) : null}
+
 
                     <div className="flex flex-wrap gap-4">
                       {[
