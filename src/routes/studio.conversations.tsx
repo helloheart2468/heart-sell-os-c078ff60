@@ -6,7 +6,7 @@ import { toast } from "sonner";
 import { FollowUpStrip } from "@/components/followup-strip";
 import { listCampaigns } from "@/lib/campaigns";
 import { prepCall, touchHistory } from "@/lib/followup-handoff";
-import { formatDue, slotForStep } from "@/lib/followups";
+import { formatDue } from "@/lib/followups";
 import { useOffers } from "@/lib/offers";
 import { listProspects, type Prospect } from "@/lib/prospects";
 

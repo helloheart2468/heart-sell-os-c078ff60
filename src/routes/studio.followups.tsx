@@ -53,6 +53,7 @@ function FollowUpsPage() {
     await queryClient.invalidateQueries({ queryKey: ["prospects"] });
   };
 
+  const [campaignFilter, setCampaignFilter] = useState<string>("all");
   const campaigns = useQuery({
     queryKey: ["campaigns", scope ?? "all"],
     queryFn: () => listCampaigns(scope),
