@@ -16,6 +16,7 @@ import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as StudioIndexRouteImport } from './routes/studio.index'
 import { Route as StudioThreadIdRouteImport } from './routes/studio.$threadId'
 import { Route as StudioBusinessRouteImport } from './routes/studio.business'
+import { Route as StudioConversationsRouteImport } from './routes/studio.conversations'
 import { Route as StudioFollowupsRouteImport } from './routes/studio.followups'
 import { Route as StudioListsRouteImport } from './routes/studio.lists'
 import { Route as StudioOffersRouteImport } from './routes/studio.offers'
@@ -59,6 +60,11 @@ const StudioThreadIdRoute = StudioThreadIdRouteImport.update({
 const StudioBusinessRoute = StudioBusinessRouteImport.update({
   id: '/business',
   path: '/business',
+  getParentRoute: () => StudioRoute,
+} as any)
+const StudioConversationsRoute = StudioConversationsRouteImport.update({
+  id: '/conversations',
+  path: '/conversations',
   getParentRoute: () => StudioRoute,
 } as any)
 const StudioFollowupsRoute = StudioFollowupsRouteImport.update({
@@ -115,6 +121,7 @@ export interface FileRoutesByFullPath {
   '/api/chat': typeof ApiChatRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/business': typeof StudioBusinessRoute
+  '/studio/conversations': typeof StudioConversationsRoute
   '/studio/followups': typeof StudioFollowupsRoute
   '/studio/lists': typeof StudioListsRoute
   '/studio/offers': typeof StudioOffersRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/api/chat': typeof ApiChatRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/business': typeof StudioBusinessRoute
+  '/studio/conversations': typeof StudioConversationsRoute
   '/studio/followups': typeof StudioFollowupsRoute
   '/studio/lists': typeof StudioListsRoute
   '/studio/offers': typeof StudioOffersRoute
@@ -151,6 +159,7 @@ export interface FileRoutesById {
   '/api/chat': typeof ApiChatRoute
   '/studio/$threadId': typeof StudioThreadIdRoute
   '/studio/business': typeof StudioBusinessRoute
+  '/studio/conversations': typeof StudioConversationsRoute
   '/studio/followups': typeof StudioFollowupsRoute
   '/studio/lists': typeof StudioListsRoute
   '/studio/offers': typeof StudioOffersRoute
@@ -171,6 +180,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/studio/$threadId'
     | '/studio/business'
+    | '/studio/conversations'
     | '/studio/followups'
     | '/studio/lists'
     | '/studio/offers'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/studio/$threadId'
     | '/studio/business'
+    | '/studio/conversations'
     | '/studio/followups'
     | '/studio/lists'
     | '/studio/offers'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/api/chat'
     | '/studio/$threadId'
     | '/studio/business'
+    | '/studio/conversations'
     | '/studio/followups'
     | '/studio/lists'
     | '/studio/offers'
@@ -274,6 +286,13 @@ declare module '@tanstack/react-router' {
       path: '/business'
       fullPath: '/studio/business'
       preLoaderRoute: typeof StudioBusinessRouteImport
+      parentRoute: typeof StudioRoute
+    }
+    '/studio/conversations': {
+      id: '/studio/conversations'
+      path: '/conversations'
+      fullPath: '/studio/conversations'
+      preLoaderRoute: typeof StudioConversationsRouteImport
       parentRoute: typeof StudioRoute
     }
     '/studio/followups': {
@@ -345,6 +364,7 @@ declare module '@tanstack/react-router' {
 interface StudioRouteChildren {
   StudioThreadIdRoute: typeof StudioThreadIdRoute
   StudioBusinessRoute: typeof StudioBusinessRoute
+  StudioConversationsRoute: typeof StudioConversationsRoute
   StudioFollowupsRoute: typeof StudioFollowupsRoute
   StudioListsRoute: typeof StudioListsRoute
   StudioOffersRoute: typeof StudioOffersRoute
@@ -360,6 +380,7 @@ interface StudioRouteChildren {
 const StudioRouteChildren: StudioRouteChildren = {
   StudioThreadIdRoute: StudioThreadIdRoute,
   StudioBusinessRoute: StudioBusinessRoute,
+  StudioConversationsRoute: StudioConversationsRoute,
   StudioFollowupsRoute: StudioFollowupsRoute,
   StudioListsRoute: StudioListsRoute,
   StudioOffersRoute: StudioOffersRoute,
