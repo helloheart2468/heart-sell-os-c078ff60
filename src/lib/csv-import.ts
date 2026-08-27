@@ -5,6 +5,9 @@ export type ImportField =
   | "title"
   | "company"
   | "linkedin_url"
+  | "instagram_url"
+  | "facebook_url"
+  | "other_social_url"
   | "email"
   | "website"
   | "location"
@@ -16,6 +19,9 @@ export const IMPORT_FIELDS: { field: ImportField; label: string }[] = [
   { field: "title", label: "Title" },
   { field: "company", label: "Company" },
   { field: "linkedin_url", label: "LinkedIn URL" },
+  { field: "instagram_url", label: "Instagram" },
+  { field: "facebook_url", label: "Facebook" },
+  { field: "other_social_url", label: "Other social (X, TikTok, YouTube…)" },
   { field: "email", label: "Email" },
   { field: "website", label: "Website" },
   { field: "location", label: "Location" },
@@ -72,7 +78,10 @@ export function parseDelimited(text: string): string[][] {
 }
 
 const PATTERNS: { field: ImportField; test: RegExp }[] = [
-  { field: "linkedin_url", test: /linked|profile\s*url|li[\s_-]*url/i },
+  { field: "linkedin_url", test: /linked|li[\s_-]*url/i },
+  { field: "instagram_url", test: /instagram|(^|\W)ig(\W|$)/i },
+  { field: "facebook_url", test: /facebook|(^|\W)fb(\W|$)|messenger/i },
+  { field: "other_social_url", test: /twitter|(^|\W)x(\W|$)|tiktok|youtube|threads|social|handle/i },
   { field: "email", test: /e-?mail/i },
   { field: "website", test: /web|site|url|domain/i },
   { field: "title", test: /title|role|position|job/i },
@@ -109,6 +118,9 @@ export type ImportRow = {
   title?: string;
   company?: string;
   linkedin_url?: string;
+  instagram_url?: string;
+  facebook_url?: string;
+  other_social_url?: string;
   email?: string;
   website?: string;
   location?: string;
@@ -140,7 +152,18 @@ export function buildRows(
     }
     if (!name) continue;
     const row: ImportRow = { name };
-    for (const key of ["title", "company", "linkedin_url", "email", "website", "location", "notes"] as const) {
+    for (const key of [
+      "title",
+      "company",
+      "linkedin_url",
+      "instagram_url",
+      "facebook_url",
+      "other_social_url",
+      "email",
+      "website",
+      "location",
+      "notes",
+    ] as const) {
       const value = record[key];
       if (value) row[key] = value;
     }
