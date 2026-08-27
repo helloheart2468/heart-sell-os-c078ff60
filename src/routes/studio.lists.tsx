@@ -442,11 +442,22 @@ function ListsPage() {
 
           {prospects.data?.length === 0 ? (
             <div className="rounded-xl border border-dashed border-border p-8 text-center text-muted-foreground">
-              Nothing saved yet. Ask Scout to find people and save the ones you like.
+              Nothing saved yet. Ask Scout to find people, or upload a list you already have.
             </div>
           ) : null}
         </div>
       </div>
+
+      <ListUpload
+        open={uploadOpen}
+        onOpenChange={setUploadOpen}
+        lists={lists.data ?? []}
+        briefId={currentId ?? null}
+        onImported={async (listId) => {
+          setActiveList(listId);
+          await refresh();
+        }}
+      />
     </main>
   );
 }
