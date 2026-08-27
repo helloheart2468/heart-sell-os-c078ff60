@@ -214,7 +214,12 @@ function ConversationsPage() {
                     </div>
 
                     <div className="mt-4">
-                      <FollowUpStrip prospect={prospect} briefId={currentId} onChange={refresh} />
+                      <FollowUpStrip
+                        prospect={prospect}
+                        briefId={currentId}
+                        campaignId={prospect.campaign_id}
+                        onChange={refresh}
+                      />
                     </div>
                   </article>
                 ))}
