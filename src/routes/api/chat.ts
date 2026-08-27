@@ -11,7 +11,7 @@ import { z } from "zod";
 
 import { createLovableAiGatewayProvider } from "@/lib/ai-gateway.server";
 import { isAgentId, type AgentId } from "@/lib/heart-sell";
-import { searchProspects } from "@/lib/perplexity.server";
+import { researchProspect, searchProspects } from "@/lib/perplexity.server";
 import { buildSystemPrompt } from "@/lib/prompts.server";
 
 type ChatBody = {
@@ -27,7 +27,12 @@ function json(body: unknown, status: number) {
   });
 }
 
-function buildTools(agent: AgentId, supabase: SupabaseClient, briefId: string | null) {
+function buildTools(
+  agent: AgentId,
+  supabase: SupabaseClient,
+  briefId: string | null,
+  founderContext: string,
+) {
   const lookupSavedContacts = tool({
     description:
       "Look up people the founder has already saved to their Heart Sell lists, by name, company or keyword. Use this before asking the founder to re-type details about a contact.",
@@ -286,7 +291,18 @@ export const Route = createFileRoute("/api/chat")({
               ((offers ?? []) as { name?: string }[]).map((offer) => offer.name ?? ""),
             ),
             messages: await convertToModelMessages(messages),
-            tools: buildTools(agent, supabase, briefId),
+            tools: buildTools(
+              agent,
+              supabase,
+              briefId,
+              [
+                (business as Record<string, string> | null)?.["business_summary"] ?? "",
+                (business as Record<string, string> | null)?.["unfair_advantage"] ?? "",
+                (brief as Record<string, string> | null)?.["icp_description"] ?? "",
+              ]
+                .filter(Boolean)
+                .join(" | "),
+            ),
             stopWhen: stepCountIs(50),
           });
 
