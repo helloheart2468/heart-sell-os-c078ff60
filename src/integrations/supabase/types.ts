@@ -233,6 +233,7 @@ export type Database = {
           status: string
           updated_at: string
           user_id: string
+          warmth: string
         }
         Insert: {
           brief_id?: string | null
@@ -252,6 +253,7 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id: string
+          warmth?: string
         }
         Update: {
           brief_id?: string | null
@@ -271,6 +273,7 @@ export type Database = {
           status?: string
           updated_at?: string
           user_id?: string
+          warmth?: string
         }
         Relationships: [
           {
@@ -474,6 +477,7 @@ export type Database = {
           notes: string | null
           sequence_step: number
           social_url: string | null
+          socials: Json
           source: string
           sources: Json
           status: string
@@ -507,6 +511,7 @@ export type Database = {
           notes?: string | null
           sequence_step?: number
           social_url?: string | null
+          socials?: Json
           source?: string
           sources?: Json
           status?: string
@@ -540,6 +545,7 @@ export type Database = {
           notes?: string | null
           sequence_step?: number
           social_url?: string | null
+          socials?: Json
           source?: string
           sources?: Json
           status?: string
