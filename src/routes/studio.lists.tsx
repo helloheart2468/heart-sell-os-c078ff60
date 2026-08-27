@@ -1,11 +1,17 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { ExternalLink, Trash2 } from "lucide-react";
+import { useServerFn } from "@tanstack/react-start";
+import { ExternalLink, Sparkles, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 
+import {
+  BulkResearchResults,
+  type BulkResearchEntry,
+} from "@/components/bulk-research";
 import { startSession } from "@/lib/handoff";
 import { useOffers } from "@/lib/offers";
+import { researchProspectsBulk } from "@/lib/research.functions";
 import {
   deleteProspect,
   deleteProspectList,
@@ -65,6 +71,55 @@ function ListsPage() {
         : `I have a call with ${prospect.name}. Here's what we have on file:\n\n${block}\n\nBuild my prep sheet.`;
     try {
       const threadId = await startSession(agent, "chat", prompt, undefined, prospect.brief_id ?? currentId);
+      await navigate({ to: "/studio/$threadId", params: { threadId } });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't hand that off.");
+    }
+  };
+
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [entries, setEntries] = useState<BulkResearchEntry[]>([]);
+  const [researching, setResearching] = useState(false);
+  const runResearch = useServerFn(researchProspectsBulk);
+
+  const toggleSelected = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const visible = prospects.data ?? [];
+
+  const research = async () => {
+    const ids = [...selected].slice(0, 10);
+    if (ids.length === 0) return;
+    setResearching(true);
+    setEntries([]);
+    try {
+      const result = await runResearch({ data: { prospectIds: ids } });
+      setEntries(result.entries as BulkResearchEntry[]);
+      toast.success(`Researched ${result.entries.length} ${result.entries.length === 1 ? "person" : "people"}.`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Bulk research failed.");
+    } finally {
+      setResearching(false);
+    }
+  };
+
+  const draftWithHooks = async (prospectId: string, approved: string) => {
+    const prospect = visible.find((row) => row.id === prospectId);
+    if (!prospect) return;
+    const prompt = `I want to reach out to this person from my saved list:\n\n${prospectSummary(prospect)}\n\nI've reviewed and approved these verified details — use them exactly as worded, and nothing else:\n${approved}\n\nWrite the CCRA first message.`;
+    try {
+      const threadId = await startSession(
+        "quill",
+        "chat",
+        prompt,
+        undefined,
+        prospect.brief_id ?? currentId,
+      );
       await navigate({ to: "/studio/$threadId", params: { threadId } });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Couldn't hand that off.");
@@ -141,17 +196,61 @@ function ListsPage() {
           </button>
         ) : null}
 
+        <div className="mt-8 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card p-4">
+          <button
+            type="button"
+            onClick={() =>
+              setSelected((prev) =>
+                prev.size === visible.length
+                  ? new Set()
+                  : new Set(visible.slice(0, 10).map((row) => row.id)),
+              )
+            }
+            disabled={visible.length === 0}
+            className="h-9 rounded-full border border-border px-4 text-foreground hover:bg-muted disabled:opacity-40"
+          >
+            {selected.size === visible.length && visible.length > 0
+              ? "Clear selection"
+              : "Select up to 10"}
+          </button>
+          <span className="text-muted-foreground">{selected.size} selected</span>
+          <button
+            type="button"
+            onClick={() => void research()}
+            disabled={selected.size === 0 || researching}
+            className="inline-flex h-9 items-center gap-2 rounded-full bg-primary px-4 font-medium text-primary-foreground disabled:opacity-40"
+          >
+            <Sparkles className="h-4 w-4" />
+            {researching
+              ? "Researching…"
+              : `Research commonality & compliment${selected.size ? ` (${selected.size})` : ""}`}
+          </button>
+          <span className="text-muted-foreground">Up to 10 at a time.</span>
+        </div>
+
+        <BulkResearchResults entries={entries} onDraft={(id, approved) => void draftWithHooks(id, approved)} />
+
         <div className="mt-8 space-y-3">
-          {(prospects.data ?? []).map((prospect) => (
+          {visible.map((prospect) => (
             <article key={prospect.id} className="paper-panel p-5">
               <div className="flex flex-wrap items-start justify-between gap-3">
-                <div className="min-w-0">
+                <div className="flex min-w-0 items-start gap-3">
+                  <input
+                    type="checkbox"
+                    checked={selected.has(prospect.id)}
+                    onChange={() => toggleSelected(prospect.id)}
+                    aria-label={`Select ${prospect.name} for research`}
+                    className="mt-2 h-5 w-5 shrink-0 accent-[color:var(--primary)]"
+                  />
+                  <div className="min-w-0">
                   <h2 className="font-display text-2xl text-foreground">{prospect.name}</h2>
+
                   <p className="text-muted-foreground">
                     {[prospect.title, prospect.company, prospect.location]
                       .filter(Boolean)
                       .join(" · ")}
                   </p>
+                  </div>
                 </div>
                 <div className="flex items-center gap-2">
                   <select

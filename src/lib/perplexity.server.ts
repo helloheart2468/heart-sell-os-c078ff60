@@ -147,7 +147,14 @@ export async function searchProspects(input: {
   return result;
 }
 
-export type ResearchHook = { text: string; source?: string };
+export type HookConfidence = "high" | "medium" | "low";
+
+export type ResearchHook = {
+  text: string;
+  source?: string;
+  confidence?: HookConfidence;
+  confidence_reason?: string;
+};
 
 export type ProspectResearchResult = {
   person: string;
@@ -166,9 +173,10 @@ Rules:
 - "compliments" are specific, observable, verifiable things about their work: a named service, a launch, an award, a milestone, a talk, a piece of press, a published result.
 - "recent_signals" are timely happenings in the last ~12 months worth referencing.
 - Each item: a short one-sentence "text" plus the "source" URL it came from. Omit any item without a source URL.
+- Each item also needs "confidence": "high" when it comes from the person's own official page/profile or named press and is current; "medium" when the source is credible but indirect, older, or about their company rather than them; "low" when it may be a different person of the same name, is undated, or is a weak inference. Add a very short "confidence_reason" (max 12 words) saying why.
 - If you genuinely find nothing solid, return empty arrays and explain briefly in "notes".
 Return ONLY a JSON object:
-{"commonalities":[{"text":"","source":""}],"compliments":[{"text":"","source":""}],"recent_signals":[{"text":"","source":""}],"notes":""}
+{"commonalities":[{"text":"","source":"","confidence":"high","confidence_reason":""}],"compliments":[{"text":"","source":"","confidence":"medium","confidence_reason":""}],"recent_signals":[{"text":"","source":"","confidence":"low","confidence_reason":""}],"notes":""}
 No markdown fences, no commentary outside the JSON.`;
 
 function hooks(raw: unknown): ResearchHook[] {
@@ -179,7 +187,14 @@ function hooks(raw: unknown): ResearchHook[] {
       const text = str(row["text"]);
       if (!text) return null;
       const source = str(row["source"]);
-      return source ? { text, source } : { text };
+      const rawConfidence = str(row["confidence"])?.toLowerCase();
+      const confidence: HookConfidence =
+        rawConfidence === "high" || rawConfidence === "low" ? rawConfidence : "medium";
+      const reason = str(row["confidence_reason"]);
+      const hook: ResearchHook = { text, confidence };
+      if (source) hook.source = source;
+      if (reason) hook.confidence_reason = reason;
+      return hook;
     })
     .filter((item): item is ResearchHook => item !== null)
     .slice(0, 6);
