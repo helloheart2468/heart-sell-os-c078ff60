@@ -24,6 +24,7 @@ import { Route as StudioTodosRouteImport } from './routes/studio.todos'
 import { Route as StudioBriefIndexRouteImport } from './routes/studio.brief.index'
 import { Route as StudioBriefBriefIdRouteImport } from './routes/studio.brief.$briefId'
 import { Route as StudioCampaignsIndexRouteImport } from './routes/studio.campaigns.index'
+import { Route as StudioCampaignsCampaignIdRouteImport } from './routes/studio.campaigns.$campaignId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -100,6 +101,12 @@ const StudioCampaignsIndexRoute = StudioCampaignsIndexRouteImport.update({
   path: '/campaigns/',
   getParentRoute: () => StudioRoute,
 } as any)
+const StudioCampaignsCampaignIdRoute =
+  StudioCampaignsCampaignIdRouteImport.update({
+    id: '/campaigns/$campaignId',
+    path: '/campaigns/$campaignId',
+    getParentRoute: () => StudioRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -115,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/studio/todos': typeof StudioTodosRoute
   '/studio/': typeof StudioIndexRoute
   '/studio/brief/$briefId': typeof StudioBriefBriefIdRoute
+  '/studio/campaigns/$campaignId': typeof StudioCampaignsCampaignIdRoute
   '/studio/brief/': typeof StudioBriefIndexRoute
   '/studio/campaigns/': typeof StudioCampaignsIndexRoute
 }
@@ -131,6 +139,7 @@ export interface FileRoutesByTo {
   '/studio/todos': typeof StudioTodosRoute
   '/studio': typeof StudioIndexRoute
   '/studio/brief/$briefId': typeof StudioBriefBriefIdRoute
+  '/studio/campaigns/$campaignId': typeof StudioCampaignsCampaignIdRoute
   '/studio/brief': typeof StudioBriefIndexRoute
   '/studio/campaigns': typeof StudioCampaignsIndexRoute
 }
@@ -149,6 +158,7 @@ export interface FileRoutesById {
   '/studio/todos': typeof StudioTodosRoute
   '/studio/': typeof StudioIndexRoute
   '/studio/brief/$briefId': typeof StudioBriefBriefIdRoute
+  '/studio/campaigns/$campaignId': typeof StudioCampaignsCampaignIdRoute
   '/studio/brief/': typeof StudioBriefIndexRoute
   '/studio/campaigns/': typeof StudioCampaignsIndexRoute
 }
@@ -168,6 +178,7 @@ export interface FileRouteTypes {
     | '/studio/todos'
     | '/studio/'
     | '/studio/brief/$briefId'
+    | '/studio/campaigns/$campaignId'
     | '/studio/brief/'
     | '/studio/campaigns/'
   fileRoutesByTo: FileRoutesByTo
@@ -184,6 +195,7 @@ export interface FileRouteTypes {
     | '/studio/todos'
     | '/studio'
     | '/studio/brief/$briefId'
+    | '/studio/campaigns/$campaignId'
     | '/studio/brief'
     | '/studio/campaigns'
   id:
@@ -201,6 +213,7 @@ export interface FileRouteTypes {
     | '/studio/todos'
     | '/studio/'
     | '/studio/brief/$briefId'
+    | '/studio/campaigns/$campaignId'
     | '/studio/brief/'
     | '/studio/campaigns/'
   fileRoutesById: FileRoutesById
@@ -319,6 +332,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StudioCampaignsIndexRouteImport
       parentRoute: typeof StudioRoute
     }
+    '/studio/campaigns/$campaignId': {
+      id: '/studio/campaigns/$campaignId'
+      path: '/campaigns/$campaignId'
+      fullPath: '/studio/campaigns/$campaignId'
+      preLoaderRoute: typeof StudioCampaignsCampaignIdRouteImport
+      parentRoute: typeof StudioRoute
+    }
   }
 }
 
@@ -332,6 +352,7 @@ interface StudioRouteChildren {
   StudioTodosRoute: typeof StudioTodosRoute
   StudioIndexRoute: typeof StudioIndexRoute
   StudioBriefBriefIdRoute: typeof StudioBriefBriefIdRoute
+  StudioCampaignsCampaignIdRoute: typeof StudioCampaignsCampaignIdRoute
   StudioBriefIndexRoute: typeof StudioBriefIndexRoute
   StudioCampaignsIndexRoute: typeof StudioCampaignsIndexRoute
 }
@@ -346,6 +367,7 @@ const StudioRouteChildren: StudioRouteChildren = {
   StudioTodosRoute: StudioTodosRoute,
   StudioIndexRoute: StudioIndexRoute,
   StudioBriefBriefIdRoute: StudioBriefBriefIdRoute,
+  StudioCampaignsCampaignIdRoute: StudioCampaignsCampaignIdRoute,
   StudioBriefIndexRoute: StudioBriefIndexRoute,
   StudioCampaignsIndexRoute: StudioCampaignsIndexRoute,
 }
