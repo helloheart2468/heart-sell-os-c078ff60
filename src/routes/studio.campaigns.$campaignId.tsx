@@ -20,7 +20,7 @@ import {
 } from "@/lib/campaigns";
 import { download, openChecklist, slugify, vaCsv, type VaRow } from "@/lib/exports";
 import { startSession } from "@/lib/handoff";
-import { listProspects, prospectSummary } from "@/lib/prospects";
+import { listProspects, prospectSummary, socialLinks } from "@/lib/prospects";
 
 export const Route = createFileRoute("/studio/campaigns/$campaignId")({
   head: () => ({
