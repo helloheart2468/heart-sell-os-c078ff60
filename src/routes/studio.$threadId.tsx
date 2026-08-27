@@ -85,6 +85,8 @@ function ThreadPage() {
   const { threadId } = useParams({ from: "/studio/$threadId" });
   const queryClient = useQueryClient();
   const navigate = useNavigate();
+  const { offers } = useOffers();
+
 
   const thread = useQuery({ queryKey: ["thread", threadId], queryFn: () => getThread(threadId) });
   const history = useQuery({
