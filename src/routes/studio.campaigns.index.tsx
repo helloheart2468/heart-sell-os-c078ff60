@@ -41,6 +41,7 @@ function CampaignsPage() {
   const [name, setName] = useState("");
   const [listId, setListId] = useState("");
   const [channel, setChannel] = useState("linkedin");
+  const [warmth, setWarmth] = useState("cold");
   const [purpose, setPurpose] = useState<CampaignPurpose>("evergreen");
   const [eventName, setEventName] = useState("");
   const [eventDate, setEventDate] = useState("");
@@ -63,6 +64,7 @@ function CampaignsPage() {
         listId: listId || null,
         briefId: currentId,
         channel,
+        warmth,
         purpose,
         eventName: eventName.trim() || null,
         eventDate: eventDate.trim() || null,
@@ -125,8 +127,11 @@ function CampaignsPage() {
               aria-label="Channel"
               className="h-10 rounded-lg border border-input bg-background px-3 text-foreground"
             >
-              <option value="linkedin">LinkedIn</option>
-              <option value="email">Email</option>
+              {CHANNELS.map((entry) => (
+                <option key={entry.value} value={entry.value}>
+                  {entry.label}
+                </option>
+              ))}
             </select>
             <button
               type="button"
@@ -136,6 +141,31 @@ function CampaignsPage() {
             >
               Create
             </button>
+          </div>
+          <p className="mt-2 text-muted-foreground">
+            {CHANNELS.find((entry) => entry.value === channel)?.hint}
+          </p>
+          <div className="mt-4">
+            <p className="text-muted-foreground">How well do these people know you?</p>
+            <div className="mt-2 flex flex-wrap gap-2">
+              {WARMTHS.map((entry) => (
+                <button
+                  key={entry.value}
+                  type="button"
+                  onClick={() => setWarmth(entry.value)}
+                  className={`rounded-full border px-4 py-2 text-left ${
+                    warmth === entry.value
+                      ? "border-primary bg-primary/10 text-foreground"
+                      : "border-border text-muted-foreground hover:bg-muted"
+                  }`}
+                >
+                  {entry.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-muted-foreground">
+              {WARMTHS.find((entry) => entry.value === warmth)?.hint}
+            </p>
           </div>
           <div className="mt-4">
             <p className="text-muted-foreground">What is this campaign for?</p>
@@ -218,7 +248,7 @@ function CampaignsPage() {
                 </Link>
                 <p className="text-muted-foreground">
                   {listName(campaign.list_id)} ·{" "}
-                  {campaign.channel === "email" ? "Email" : "LinkedIn"}
+                  {channelLabel(campaign.channel)}{campaign.warmth === "warm" ? " · warm" : " · cold"}
                   {campaign.purpose && campaign.purpose !== "evergreen"
                     ? ` · ${PURPOSES.find((entry) => entry.value === campaign.purpose)?.label ?? campaign.purpose}`
                     : ""}
