@@ -172,19 +172,91 @@ function StudioLayout() {
                 <div className="mt-1 space-y-1 pl-3">
                   {group.map((thread) => {
                     const active = params.threadId === thread.id;
+                    const renaming = renamingId === thread.id;
                     return (
-                      <Link
+                      <div
                         key={thread.id}
-                        to="/studio/$threadId"
-                        params={{ threadId: thread.id }}
-                        className={`block rounded-lg px-3 py-2 text-sm transition-colors ${
-                          active
-                            ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                            : "text-muted-foreground hover:bg-sidebar-accent/60 hover:text-sidebar-foreground"
+                        className={`group/row flex items-start gap-1 rounded-lg px-2 py-1 transition-colors ${
+                          active ? "bg-sidebar-accent" : "hover:bg-sidebar-accent/60"
                         }`}
                       >
-                        <span className="line-clamp-2">{thread.title}</span>
-                      </Link>
+                        {renaming ? (
+                          <input
+                            autoFocus
+                            defaultValue={thread.title}
+                            onBlur={(event) => void commitRename(thread.id, event.target.value)}
+                            onKeyDown={(event) => {
+                              if (event.key === "Enter") event.currentTarget.blur();
+                              if (event.key === "Escape") setRenamingId(null);
+                            }}
+                            className="h-8 min-w-0 flex-1 rounded-md border border-border bg-background px-2 text-sm text-sidebar-foreground"
+                          />
+                        ) : (
+                          <>
+                            <Link
+                              to="/studio/$threadId"
+                              params={{ threadId: thread.id }}
+                              className={`min-w-0 flex-1 px-1 py-1 text-sm transition-colors ${
+                                active
+                                  ? "text-sidebar-accent-foreground"
+                                  : "text-muted-foreground hover:text-sidebar-foreground"
+                              }`}
+                            >
+                              <span className="line-clamp-2 flex items-start gap-1">
+                                {thread.is_pinned ? (
+                                  <Pin className="mt-1 h-3 w-3 shrink-0 text-primary" />
+                                ) : null}
+                                {thread.title}
+                              </span>
+                            </Link>
+                            <div className="flex shrink-0 items-center gap-0.5 opacity-0 transition-opacity group-hover/row:opacity-100 focus-within:opacity-100">
+                              <button
+                                type="button"
+                                aria-label="Rename session"
+                                title="Rename"
+                                onClick={() => setRenamingId(thread.id)}
+                                className="rounded p-1 text-muted-foreground hover:text-sidebar-foreground"
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                type="button"
+                                aria-label={thread.is_pinned ? "Unpin session" : "Pin session"}
+                                title={thread.is_pinned ? "Unpin" : "Pin"}
+                                onClick={() =>
+                                  void mutate(setThreadPinned(thread.id, !thread.is_pinned))
+                                }
+                                className="rounded p-1 text-muted-foreground hover:text-sidebar-foreground"
+                              >
+                                {thread.is_pinned ? (
+                                  <PinOff className="h-3.5 w-3.5" />
+                                ) : (
+                                  <Pin className="h-3.5 w-3.5" />
+                                )}
+                              </button>
+                              <button
+                                type="button"
+                                aria-label={
+                                  thread.is_archived ? "Restore session" : "Archive session"
+                                }
+                                title={thread.is_archived ? "Restore" : "Archive"}
+                                onClick={() =>
+                                  void mutate(
+                                    setThreadArchived(thread.id, !thread.is_archived),
+                                  )
+                                }
+                                className="rounded p-1 text-muted-foreground hover:text-sidebar-foreground"
+                              >
+                                {thread.is_archived ? (
+                                  <ArchiveRestore className="h-3.5 w-3.5" />
+                                ) : (
+                                  <Archive className="h-3.5 w-3.5" />
+                                )}
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
                     );
                   })}
                 </div>
