@@ -21,12 +21,14 @@ export type MessageRow = {
   created_at: string;
 };
 
-const THREAD_COLUMNS = "id, agent, mode, title, updated_at, brief_id";
+const THREAD_COLUMNS =
+  "id, agent, mode, title, updated_at, brief_id, is_pinned, is_archived";
 
 export async function listThreads(): Promise<ThreadRow[]> {
   const { data, error } = await supabase
     .from("threads")
     .select(THREAD_COLUMNS)
+    .order("is_pinned", { ascending: false })
     .order("updated_at", { ascending: false })
     .limit(200);
   if (error) throw error;
