@@ -158,7 +158,7 @@ export function FollowUpStrip({
             disabled={busy || !callAt}
             onClick={() =>
               void run(
-                logCallBooked(prospect, new Date(callAt, campaignId).toISOString()),
+                logCallBooked(prospect, new Date(callAt).toISOString(), campaignId),
                 "Booked — Ace will nudge you before it.",
               )
             }
