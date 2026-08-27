@@ -6,7 +6,8 @@ import { toast } from "sonner";
 import { StructuredForm } from "@/components/structured-form";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { AGENT_LIST, AGENTS, buildStructuredMessage, type AgentId } from "@/lib/heart-sell";
-import { createThread, getActiveBrief } from "@/lib/threads";
+import { useOffers } from "@/lib/offers";
+import { createThread } from "@/lib/threads";
 
 export const Route = createFileRoute("/studio/")({
   head: () => ({
@@ -30,11 +31,11 @@ function StudioHome() {
   const navigate = useNavigate();
   const [openAgent, setOpenAgent] = useState<AgentId | null>(null);
   const [openChat, setOpenChat] = useState("");
-  const brief = useQuery({ queryKey: ["brief"], queryFn: getActiveBrief });
+  const { offers, currentId, currentOffer, setCurrent } = useOffers();
 
   const start = async (agent: AgentId, mode: "chat" | "structured", prompt?: string, title?: string) => {
     try {
-      const threadId = await createThread(agent, mode, title);
+      const threadId = await createThread(agent, mode, title, currentId);
       if (prompt) sessionStorage.setItem(`pending:${threadId}`, prompt);
       await navigate({ to: "/studio/$threadId", params: { threadId } });
     } catch (error) {

@@ -22,10 +22,19 @@ export type ProspectSearchOutput = {
   error?: string;
 };
 
-export function ProspectResults({ output }: { output: ProspectSearchOutput }) {
+export function ProspectResults({
+  output,
+  briefId,
+}: {
+  output: ProspectSearchOutput;
+  briefId?: string | null;
+}) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const lists = useQuery({ queryKey: ["prospect-lists"], queryFn: listProspectLists });
+  const lists = useQuery({
+    queryKey: ["prospect-lists", briefId ?? "all"],
+    queryFn: () => listProspectLists(briefId ?? undefined),
+  });
 
   const prospects = output.prospects ?? [];
   const audience = output.audience ?? "Ideal Clients";
@@ -79,10 +88,16 @@ export function ProspectResults({ output }: { output: ProspectSearchOutput }) {
           name: listName.trim() || `${audience} list`,
           audience,
           temperature,
+          brief_id: briefId ?? null,
         });
         targetList = created.id;
       }
-      await saveProspects(picked, { listId: targetList, audience, temperature });
+      await saveProspects(picked, {
+        listId: targetList,
+        audience,
+        temperature,
+        briefId: briefId ?? null,
+      });
       setSavedIds(targetList);
       await queryClient.invalidateQueries({ queryKey: ["prospect-lists"] });
       await queryClient.invalidateQueries({ queryKey: ["prospects"] });
@@ -106,7 +121,7 @@ export function ProspectResults({ output }: { output: ProspectSearchOutput }) {
         ? `I want to reach out to ${picked.length === 1 ? "this person" : `these ${picked.length} people`} from my ${audience} list. Here is everything Scout found:\n\n${block}\n\nHelp me write the CCRA first message${picked.length > 1 ? " for each of them" : ""}. Ask me for any real commonality or compliment you need — don't invent one.`
         : `I have a call coming up with ${picked[0]?.name}. Here's what we have on file:\n\n${block}\n\nBuild my prep sheet.`;
     try {
-      const threadId = await startSession(agent, "chat", prompt);
+      const threadId = await startSession(agent, "chat", prompt, undefined, briefId ?? undefined);
       await navigate({ to: "/studio/$threadId", params: { threadId } });
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Couldn't hand that off.");
