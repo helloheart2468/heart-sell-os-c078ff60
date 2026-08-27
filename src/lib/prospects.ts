@@ -2,6 +2,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 export type ProspectList = {
   id: string;
+  brief_id: string | null;
   name: string;
   audience: string;
   temperature: string;
@@ -12,6 +13,7 @@ export type ProspectList = {
 
 export type Prospect = {
   id: string;
+  brief_id: string | null;
   list_id: string | null;
   name: string;
   title: string | null;
@@ -46,7 +48,7 @@ export type NewProspect = {
 };
 
 const PROSPECT_COLUMNS =
-  "id, list_id, name, title, company, blurb, location, linkedin_url, social_url, website, email, audience, temperature, status, why_fits, notes, created_at";
+  "id, brief_id, list_id, name, title, company, blurb, location, linkedin_url, social_url, website, email, audience, temperature, status, why_fits, notes, created_at";
 
 async function currentUserId() {
   const { data } = await supabase.auth.getUser();
@@ -55,18 +57,23 @@ async function currentUserId() {
   return id;
 }
 
-export async function listProspectLists(): Promise<ProspectList[]> {
-  const { data, error } = await supabase
+export async function listProspectLists(briefId?: string | null): Promise<ProspectList[]> {
+  let query = supabase
     .from("prospect_lists")
-    .select("id, name, audience, temperature, notes, created_at, updated_at")
-    .order("updated_at", { ascending: false });
+    .select("id, brief_id, name, audience, temperature, notes, created_at, updated_at");
+  if (briefId) query = query.eq("brief_id", briefId);
+  const { data, error } = await query.order("updated_at", { ascending: false });
   if (error) throw error;
   return (data ?? []) as ProspectList[];
 }
 
-export async function listProspects(listId?: string): Promise<Prospect[]> {
+export async function listProspects(
+  listId?: string,
+  briefId?: string | null,
+): Promise<Prospect[]> {
   let query = supabase.from("prospects").select(PROSPECT_COLUMNS);
   if (listId) query = query.eq("list_id", listId);
+  if (briefId) query = query.eq("brief_id", briefId);
   const { data, error } = await query.order("created_at", { ascending: false });
   if (error) throw error;
   return (data ?? []) as Prospect[];
@@ -86,12 +93,13 @@ export async function createProspectList(input: {
   name: string;
   audience: string;
   temperature: string;
+  brief_id?: string | null;
 }): Promise<ProspectList> {
   const userId = await currentUserId();
   const { data, error } = await supabase
     .from("prospect_lists")
     .insert({ ...input, user_id: userId })
-    .select("id, name, audience, temperature, notes, created_at, updated_at")
+    .select("id, brief_id, name, audience, temperature, notes, created_at, updated_at")
     .single();
   if (error) throw error;
   return data as ProspectList;
@@ -99,13 +107,14 @@ export async function createProspectList(input: {
 
 export async function saveProspects(
   prospects: NewProspect[],
-  options: { listId: string; audience: string; temperature: string },
+  options: { listId: string; audience: string; temperature: string; briefId?: string | null },
 ): Promise<number> {
   if (prospects.length === 0) return 0;
   const userId = await currentUserId();
   const rows = prospects.map((prospect) => ({
     user_id: userId,
     list_id: options.listId,
+    brief_id: options.briefId ?? null,
     name: prospect.name,
     title: prospect.title ?? null,
     company: prospect.company ?? null,
