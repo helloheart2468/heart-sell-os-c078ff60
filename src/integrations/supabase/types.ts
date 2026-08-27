@@ -414,6 +414,73 @@ export type Database = {
           },
         ]
       }
+      todos: {
+        Row: {
+          agent: string | null
+          brief_id: string | null
+          created_at: string
+          done_at: string | null
+          id: string
+          is_done: boolean
+          prospect_id: string | null
+          sort_order: number
+          thread_id: string | null
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent?: string | null
+          brief_id?: string | null
+          created_at?: string
+          done_at?: string | null
+          id?: string
+          is_done?: boolean
+          prospect_id?: string | null
+          sort_order?: number
+          thread_id?: string | null
+          title: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent?: string | null
+          brief_id?: string | null
+          created_at?: string
+          done_at?: string | null
+          id?: string
+          is_done?: boolean
+          prospect_id?: string | null
+          sort_order?: number
+          thread_id?: string | null
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "todos_brief_id_fkey"
+            columns: ["brief_id"]
+            isOneToOne: false
+            referencedRelation: "audience_briefs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "todos_prospect_id_fkey"
+            columns: ["prospect_id"]
+            isOneToOne: false
+            referencedRelation: "prospects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "todos_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
