@@ -52,23 +52,38 @@ function StudioHome() {
           just start talking.
         </p>
 
-        {brief.data ? (
-          <p className="mt-6 text-muted-foreground">
-            Your Audience Audit is active and feeding every guide.{" "}
-            <Link to="/studio/brief" className="underline underline-offset-4 hover:text-foreground">
-              Review or update it
+        {currentOffer ? (
+          <div className="mt-6 flex flex-wrap items-center gap-3 text-muted-foreground">
+            <span>Working on</span>
+            <select
+              value={currentId ?? ""}
+              onChange={(event) => void setCurrent(event.target.value || null)}
+              className="h-9 rounded-lg border border-border bg-background px-2 text-foreground"
+              aria-label="Current offer"
+            >
+              {offers.map((offer) => (
+                <option key={offer.id} value={offer.id}>
+                  {offer.name || "Untitled offer"}
+                </option>
+              ))}
+            </select>
+            <Link
+              to="/studio/brief"
+              className="underline underline-offset-4 hover:text-foreground"
+            >
+              Review its audit
             </Link>
-            .
-          </p>
+          </div>
         ) : (
           <div className="mt-6 rounded-xl border border-dashed border-border p-4 text-muted-foreground">
-            No Audience Audit yet. Start with Sage —{" "}
+            No offer set up yet. Start with Sage —{" "}
             <Link to="/studio/brief" className="underline underline-offset-4 hover:text-foreground">
-              fill the brief
+              fill the audit
             </Link>{" "}
             and Scout, Quill and Ace will read from it automatically.
           </div>
         )}
+
 
         <form
           className="paper-panel mt-8 p-4"
