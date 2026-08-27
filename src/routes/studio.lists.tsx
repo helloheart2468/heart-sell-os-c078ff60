@@ -77,6 +77,55 @@ function ListsPage() {
     }
   };
 
+  const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [entries, setEntries] = useState<BulkResearchEntry[]>([]);
+  const [researching, setResearching] = useState(false);
+  const runResearch = useServerFn(researchProspectsBulk);
+
+  const toggleSelected = (id: string) =>
+    setSelected((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+
+  const visible = prospects.data ?? [];
+
+  const research = async () => {
+    const ids = [...selected].slice(0, 10);
+    if (ids.length === 0) return;
+    setResearching(true);
+    setEntries([]);
+    try {
+      const result = await runResearch({ data: { prospectIds: ids } });
+      setEntries(result.entries as BulkResearchEntry[]);
+      toast.success(`Researched ${result.entries.length} ${result.entries.length === 1 ? "person" : "people"}.`);
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Bulk research failed.");
+    } finally {
+      setResearching(false);
+    }
+  };
+
+  const draftWithHooks = async (prospectId: string, approved: string) => {
+    const prospect = visible.find((row) => row.id === prospectId);
+    if (!prospect) return;
+    const prompt = `I want to reach out to this person from my saved list:\n\n${prospectSummary(prospect)}\n\nI've reviewed and approved these verified details — use them exactly as worded, and nothing else:\n${approved}\n\nWrite the CCRA first message.`;
+    try {
+      const threadId = await startSession(
+        "quill",
+        "chat",
+        prompt,
+        undefined,
+        prospect.brief_id ?? currentId,
+      );
+      await navigate({ to: "/studio/$threadId", params: { threadId } });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't hand that off.");
+    }
+  };
+
   return (
     <main className="flex-1 overflow-y-auto">
       <div className="mx-auto w-full max-w-5xl px-6 py-12">
