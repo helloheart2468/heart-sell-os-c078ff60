@@ -99,6 +99,14 @@ export function ListUpload({ open, onOpenChange, lists, briefId, onImported }: P
           ...(row.title ? { title: row.title } : {}),
           ...(row.company ? { company: row.company } : {}),
           ...(row.linkedin_url ? { linkedin_url: row.linkedin_url } : {}),
+          ...(() => {
+            const socials = [
+              row.instagram_url ? { platform: "Instagram", url: row.instagram_url } : null,
+              row.facebook_url ? { platform: "Facebook", url: row.facebook_url } : null,
+              row.other_social_url ? { platform: "Other", url: row.other_social_url } : null,
+            ].filter((link): link is { platform: string; url: string } => link !== null);
+            return socials.length ? { socials } : {};
+          })(),
           ...(row.email ? { email: row.email } : {}),
           ...(row.website ? { website: row.website } : {}),
           ...(row.location ? { location: row.location } : {}),
@@ -163,7 +171,7 @@ export function ListUpload({ open, onOpenChange, lists, briefId, onImported }: P
             value={raw}
             onChange={(event) => load(event.target.value)}
             rows={5}
-            placeholder={"Name, Title, Company, LinkedIn URL, Email\nJane Doe, Founder, Acme, https://linkedin.com/in/janedoe, jane@acme.com"}
+            placeholder={"Name, Title, Company, LinkedIn URL, Instagram, Email\nJane Doe, Founder, Acme, https://linkedin.com/in/janedoe, jane@acme.com"}
             className="w-full rounded-xl border border-input bg-background p-3 text-foreground"
           />
 

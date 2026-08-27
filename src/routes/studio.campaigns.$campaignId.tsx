@@ -12,12 +12,15 @@ import {
   listCampaignMessages,
   saveCampaignMessage,
   SLOTS,
+  slotsFor,
+  channelLabel,
+  isDm,
   updateCampaign,
   type CampaignSlot,
 } from "@/lib/campaigns";
 import { download, openChecklist, slugify, vaCsv, type VaRow } from "@/lib/exports";
 import { startSession } from "@/lib/handoff";
-import { listProspects, prospectSummary } from "@/lib/prospects";
+import { listProspects, prospectSummary, socialLinks } from "@/lib/prospects";
 
 export const Route = createFileRoute("/studio/campaigns/$campaignId")({
   head: () => ({
@@ -81,25 +84,37 @@ function CampaignDetail() {
 
   const rows = prospects.data ?? [];
   const data = campaign.data;
+  const missingProfile = rows.filter((prospect) => socialLinks(prospect).length === 0);
+  const slots = slotsFor(data?.channel ?? "linkedin", data?.warmth ?? "cold");
   const missingLinkedIn = rows.filter((prospect) => !(prospect.linkedin_url ?? "").trim());
 
   const vaRows = (slot: CampaignSlot): VaRow[] =>
     rows.map((prospect) => ({
       prospect,
       message: data ? bodyFor(data, slot, personalised, prospect.id) : "",
-      channel: data?.channel === "email" ? "Email" : "LinkedIn",
+      channel: data ? channelLabel(data.channel) : "LinkedIn",
       campaignName: data?.name ?? "Campaign",
     }));
 
   const draftTemplateWithQuill = async (slot: CampaignSlot) => {
     if (!data) return;
-    const meta = SLOTS.find((entry) => entry.slot === slot)!;
-    const others = SLOTS.filter((entry) => entry.slot !== slot)
+    const meta = slots.find((entry) => entry.slot === slot)!;
+    const others = slots.filter((entry) => entry.slot !== slot)
       .map((entry) => `${entry.label}:\n${(data[entry.slot] ?? "(not written yet)").trim()}`)
       .join("\n\n");
-    const prompt = `I'm building an outreach campaign called "${data.name}" on ${
-      data.channel === "email" ? "email" : "LinkedIn"
-    }.
+    const prompt = `I'm building an outreach campaign called "${data.name}" on ${channelLabel(
+      data.channel,
+    )}.${
+      isDm(data.channel)
+        ? ` This is a direct message, not LinkedIn or email — keep it phone-length and conversational, the way a real person types in a DM. No formatting, no bullet points, no links in the first message.${
+            data.warmth === "warm"
+              ? " These people already know me, so open by picking the thread back up honestly."
+              : " These people do NOT know me, so the first message has to earn the reply on its own: one specific, true observation about them and one easy question. No pitch and no ask for time yet."
+          }`
+        : data.warmth === "warm"
+          ? " These people already know me — reference the real history rather than opening cold."
+          : ""
+    }
 
 Write the **${meta.label}** for this campaign. ${meta.hint}${
       meta.limit ? ` Hard limit: ${meta.limit} characters.` : ""
@@ -130,7 +145,7 @@ Keep it in my voice, follow CCRA and the 7-Day Sales Path, and use [name]/[compa
     if (!data) return;
     const prospect = rows.find((entry) => entry.id === prospectId);
     if (!prospect) return;
-    const meta = SLOTS.find((entry) => entry.slot === slot)!;
+    const meta = slots.find((entry) => entry.slot === slot)!;
     const prompt = `Personalise one message from my campaign "${data.name}".
 
 ${prospectSummary(prospect)}
@@ -161,15 +176,20 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
         </Link>
         <h1 className="mt-3 font-display text-4xl text-foreground">{data.name}</h1>
         <p className="mt-2 text-muted-foreground">
-          {data.channel === "email" ? "Email" : "LinkedIn"} · {rows.length} people
-          {missingLinkedIn.length > 0
-            ? ` · ${missingLinkedIn.length} missing a LinkedIn URL`
-            : ""}
+          {channelLabel(data.channel)} · {data.warmth === "warm" ? "warm/hot" : "cold"} ·{" "}
+          {rows.length} people
+          {isDm(data.channel)
+            ? missingProfile.length > 0
+              ? ` · ${missingProfile.length} missing a profile link`
+              : ""
+            : missingLinkedIn.length > 0
+              ? ` · ${missingLinkedIn.length} missing a LinkedIn URL`
+              : ""}
         </p>
 
         <section className="mt-8 space-y-4">
           <h2 className="font-display text-2xl text-foreground">The sequence</h2>
-          {SLOTS.map((meta) => {
+          {slots.map((meta) => {
             const value = data[meta.slot] ?? "";
             return (
               <div key={meta.slot} className="paper-panel p-5">
@@ -219,16 +239,18 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-display text-2xl text-foreground">Who's in it</h2>
             <div className="flex flex-wrap gap-3">
-              <button
-                type="button"
-                onClick={() => {
-                  setShowPack(false);
-                  setShowExport((value) => !value);
-                }}
-                className="h-10 rounded-full bg-primary px-5 font-medium text-primary-foreground"
-              >
-                Export to Dripify
-              </button>
+              {isDm(data.channel) ? null : (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPack(false);
+                    setShowExport((value) => !value);
+                  }}
+                  className="h-10 rounded-full bg-primary px-5 font-medium text-primary-foreground"
+                >
+                  Export to Dripify
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => {
@@ -265,7 +287,7 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
                 For blowing through outreach in a spurt, or handing to a VA.
               </p>
               <div className="mt-3 flex flex-wrap gap-3">
-                {SLOTS.map((meta) => (
+                {slots.map((meta) => (
                   <div key={meta.slot} className="flex gap-2">
                     <button
                       type="button"
@@ -310,7 +332,7 @@ Rewrite it for this person using only what's true above. ${meta.hint}${
                 </div>
 
                 <div className="mt-3 space-y-2">
-                  {SLOTS.map((meta) => {
+                  {slots.map((meta) => {
                     const isEditing =
                       editing?.prospectId === prospect.id && editing.slot === meta.slot;
                     const custom = personalised.get(`${prospect.id}:${meta.slot}`);

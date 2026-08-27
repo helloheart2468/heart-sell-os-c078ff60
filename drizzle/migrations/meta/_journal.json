@@ -57,6 +57,13 @@
       "when": 1787829987297,
       "tag": "0007_playbooks_campaign_purpose_prospect_source",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1787830801969,
+      "tag": "0008_dm_channels_and_socials",
+      "breakpoints": true
     }
   ]
 }

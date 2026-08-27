@@ -2,6 +2,7 @@
 
 export type EnrichedPerson = {
   linkedin_url?: string;
+  socials?: { platform: string; url: string }[];
   website?: string;
   email?: string;
   title?: string;
@@ -18,12 +19,13 @@ const ENRICH_SYSTEM = `You find the public professional profile of ONE named per
 Rules:
 - Only return details you can actually source on the public web right now. Omit anything you cannot verify.
 - The most important field is a real LinkedIn profile URL (https://www.linkedin.com/in/...). Never guess a slug, never construct a URL from the person's name.
+- Also return every other ACTIVE public social profile for this same person in "socials" as {"platform":"Instagram","url":"..."} — Instagram, Facebook, X, YouTube, TikTok, Threads, Substack. Only profiles you actually found and that clearly belong to this person; never guess a handle.
 - Only include an email if it is genuinely published publicly. Otherwise omit it.
 - "blurb" is one factual sentence about what they or their business actually do.
 - "confidence": "high" when you are sure this is the same person (name plus company or title match on their own profile), "medium" when the match is likely but indirect, "low" when there may be several people with this name. Add a short "confidence_reason" (max 12 words).
 - If you cannot confidently identify the person, return empty fields, confidence "low", and say why in "notes".
 Return ONLY a JSON object:
-{"linkedin_url":"","website":"","email":"","title":"","company":"","location":"","blurb":"","confidence":"high","confidence_reason":"","notes":""}
+{"linkedin_url":"","socials":[{"platform":"","url":""}],"website":"","email":"","title":"","company":"","location":"","blurb":"","confidence":"high","confidence_reason":"","notes":""}
 No markdown fences, no commentary outside the JSON.`;
 
 function extractJson(text: string): Record<string, unknown> | null {
@@ -113,6 +115,18 @@ export async function enrichPerson(input: {
     const value = str(parsed[key]);
     if (value) (result as Record<string, unknown>)[key] = value;
   }
+  const socials = Array.isArray(parsed["socials"])
+    ? (parsed["socials"] as unknown[])
+        .map((item) => {
+          const link = (item ?? {}) as Record<string, unknown>;
+          const url = str(link["url"]);
+          if (!url || !/^https?:\/\//i.test(url)) return null;
+          return { platform: str(link["platform"]) ?? "Other", url };
+        })
+        .filter((item): item is { platform: string; url: string } => item !== null)
+    : [];
+  if (socials.length > 0) result.socials = socials;
+
   const confidence = str(parsed["confidence"]);
   if (confidence === "high" || confidence === "medium" || confidence === "low") {
     result.confidence = confidence;

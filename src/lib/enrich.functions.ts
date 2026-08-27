@@ -25,7 +25,7 @@ export const enrichProspectsBulk = createServerFn({ method: "POST" })
 
     const { data: rows, error } = await supabase
       .from("prospects")
-      .select("id, name, title, company, location, linkedin_url, website, email, blurb, notes")
+      .select("id, name, title, company, location, linkedin_url, social_url, socials, website, email, blurb, notes")
       .in("id", data.prospectIds);
     if (error) throw new Error(error.message);
 
@@ -57,13 +57,37 @@ export const enrichProspectsBulk = createServerFn({ method: "POST" })
           };
           (["linkedin_url", "website", "email", "title", "company", "location", "blurb"] as const).forEach(fill);
 
+          // Merge any newly-found social profiles with the ones already saved.
+          const existing = Array.isArray(row.socials)
+            ? (row.socials as { platform?: string; url?: string }[])
+            : [];
+          const seen = new Set(
+            [row.linkedin_url, row.social_url, ...existing.map((link) => link?.url)]
+              .filter((url): url is string => Boolean(url))
+              .map((url) => url.replace(/\/+$/, "").toLowerCase()),
+          );
+          const merged = [...existing.filter((link) => link?.url)] as {
+            platform: string;
+            url: string;
+          }[];
+          let addedSocials = 0;
+          for (const link of found.socials ?? []) {
+            const key = link.url.replace(/\/+$/, "").toLowerCase();
+            if (seen.has(key)) continue;
+            seen.add(key);
+            merged.push(link);
+            addedSocials += 1;
+          }
+
           entry.applied = Object.keys(patch);
+          if (addedSocials > 0) entry.applied.push(`${addedSocials} social profile(s)`);
           await supabase
             .from("prospects")
             .update({
               ...patch,
+              socials: merged,
               sources: found.citations.slice(0, 8),
-              enrichment_state: found.linkedin_url || Object.keys(patch).length ? "enriched" : "not_found",
+              enrichment_state: found.linkedin_url || Object.keys(patch).length || addedSocials ? "enriched" : "not_found",
               updated_at: new Date().toISOString(),
             })
             .eq("id", row.id);

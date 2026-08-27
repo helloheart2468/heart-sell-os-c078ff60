@@ -6,6 +6,7 @@ export type FoundProspect = {
   location?: string;
   linkedin_url?: string;
   social_url?: string;
+  socials?: { platform: string; url: string }[];
   website?: string;
   email?: string;
   why_fits?: string;
@@ -22,12 +23,12 @@ export type ProspectSearchResult = {
 const SYSTEM = `You are a B2B prospect researcher. You return only real, currently-verifiable people and organizations found on the public web.
 Rules:
 - Never invent a person, company, title, URL or email. If you cannot verify a field, omit it.
-- Prefer a real LinkedIn profile URL. If none is findable, give the best public social or company profile URL instead.
+- Prefer a real LinkedIn profile URL. Also return EVERY other active public social profile you can verify for that person — Instagram, Facebook, X, YouTube, TikTok, Threads, Substack — in the "socials" array as {"platform":"Instagram","url":"..."}. Only include profiles you actually found; never guess a handle.
 - Only include an email if it is genuinely published publicly (company contact pages, association directories, speaker pages). Otherwise omit it.
 - Each entry needs a short factual blurb (1-2 sentences) about what they/their business actually do, and a one-line reason they fit the brief.
 - Prefer decision-makers and owners over junior staff.
 Return ONLY a JSON object of the shape:
-{"prospects":[{"name":"","title":"","company":"","blurb":"","location":"","linkedin_url":"","social_url":"","website":"","email":"","why_fits":""}],"notes":""}
+{"prospects":[{"name":"","title":"","company":"","blurb":"","location":"","linkedin_url":"","social_url":"","socials":[{"platform":"","url":""}],"website":"","email":"","why_fits":""}],"notes":""}
 No markdown fences, no commentary outside the JSON.`;
 
 function extractJson(text: string): unknown {
@@ -136,6 +137,17 @@ export async function searchProspects(input: {
             const value = str(row[source]);
             if (value) (entry as Record<string, unknown>)[key] = value;
           }
+          const socials = Array.isArray(row["socials"])
+            ? (row["socials"] as unknown[])
+                .map((item) => {
+                  const link = (item ?? {}) as Record<string, unknown>;
+                  const url = str(link["url"]);
+                  if (!url || !/^https?:\/\//i.test(url)) return null;
+                  return { platform: str(link["platform"]) ?? "Other", url };
+                })
+                .filter((item): item is { platform: string; url: string } => item !== null)
+            : [];
+          if (socials.length > 0) entry.socials = socials;
           return entry;
         })
         .filter((entry): entry is FoundProspect => entry !== null)

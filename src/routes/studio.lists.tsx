@@ -34,6 +34,7 @@ import {
   prospectSummary,
   updateProspect,
   type Prospect,
+  socialLinks,
 } from "@/lib/prospects";
 
 export const Route = createFileRoute("/studio/lists")({
@@ -363,8 +364,9 @@ function ListsPage() {
 
                     <div className="flex flex-wrap gap-4">
                       {[
-                        ["LinkedIn", prospect.linkedin_url],
-                        ["Social", prospect.social_url],
+                        ...socialLinks(prospect).map(
+                          (link) => [link.platform, link.url] as [string, string],
+                        ),
                         ["Website", prospect.website],
                       ]
                         .filter(([, href]) => Boolean(href))
