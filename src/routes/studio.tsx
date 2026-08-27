@@ -143,6 +143,17 @@ function StudioLayout() {
           >
             My lists
           </Link>
+          <Link
+            to="/studio/todos"
+            className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
+          >
+            My to-dos
+            {openTodoCount > 0 ? (
+              <span className="rounded-full bg-primary px-2 text-sm text-primary-foreground">
+                {openTodoCount}
+              </span>
+            ) : null}
+          </Link>
         </div>
 
         <div className="flex items-center justify-between px-5 pb-2 pt-7">
