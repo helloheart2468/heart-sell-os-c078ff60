@@ -33,6 +33,9 @@ function StudioLayout() {
 
   const { offers, currentId, setCurrent } = useOffers();
   const [showAllOffers, setShowAllOffers] = useState(false);
+  const [showArchived, setShowArchived] = useState(false);
+  const [renamingId, setRenamingId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
   const threads = useQuery({
     queryKey: ["threads", user?.id],
@@ -40,8 +43,27 @@ function StudioLayout() {
     enabled: Boolean(user),
   });
 
+  const mutate = async (action: Promise<unknown>) => {
+    try {
+      await action;
+      await queryClient.invalidateQueries({ queryKey: ["threads"] });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Couldn't update that session.");
+    }
+  };
+
+  const commitRename = async (threadId: string, title: string) => {
+    setRenamingId(null);
+    const next = title.trim();
+    if (!next) return;
+    await mutate(renameThread(threadId, next));
+    await queryClient.invalidateQueries({ queryKey: ["thread", threadId] });
+  };
+
   const visibleThreads = (threads.data ?? []).filter(
-    (thread) => showAllOffers || !currentId || !thread.brief_id || thread.brief_id === currentId,
+    (thread) =>
+      Boolean(thread.is_archived) === showArchived &&
+      (showAllOffers || !currentId || !thread.brief_id || thread.brief_id === currentId),
   );
 
   if (loading || !user) {
