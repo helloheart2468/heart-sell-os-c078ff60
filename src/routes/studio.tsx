@@ -1,5 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  useNavigate,
+  useParams,
+  useRouterState,
+} from "@tanstack/react-router";
 import { Archive, ArchiveRestore, ChevronRight, Pencil, Pin, PinOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -132,80 +139,35 @@ function StudioLayout() {
           </Link>
         </div>
 
-        <div className="px-5 pt-3">
-          <Link
-            to="/studio"
-            className="flex h-9 w-full items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground"
-          >
-            New session
-          </Link>
-          <Link
-            to="/studio/path"
-            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            Guided path
-          </Link>
-          <Link
-            to="/studio/brief"
-            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            Audience Audit
-          </Link>
-          <Link
-            to="/studio/business"
-            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            Business core
-          </Link>
-          <Link
-            to="/studio/lists"
-            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            My lists
-          </Link>
-          <Link
-            to="/studio/campaigns"
-            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            Campaigns
-          </Link>
-          <Link
-            to="/studio/conversations"
-            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            Conversations
-          </Link>
-
-          <Link
-            to="/studio/followups"
-            className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            Follow-ups
-            {dueCount > 0 ? (
-              <span className="rounded-full bg-primary px-2 text-sm text-primary-foreground">
-                {dueCount}
-              </span>
-            ) : null}
-          </Link>
-          <Link
-            to="/studio/todos"
-            className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            My to-dos
-            {openTodoCount > 0 ? (
-              <span className="rounded-full bg-primary px-2 text-sm text-primary-foreground">
-                {openTodoCount}
-              </span>
-            ) : null}
-          </Link>
-          <Link
-            to="/studio/playbook"
-            className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            My playbook
-          </Link>
-
+        <div className="mt-4 space-y-1 px-3">
+          <NavLink to="/studio">Home</NavLink>
+          <NavLink to="/studio/brief">Audience Audit</NavLink>
+          <NavLink to="/studio/lists">Find Prospects &amp; Lists</NavLink>
         </div>
+
+        <div className="mt-6 space-y-4 px-3">
+          <NavSection label="Foundation">
+            <NavLink to="/studio/business">Business core &amp; voice</NavLink>
+            <NavLink to="/studio/offers">Offers</NavLink>
+            <NavLink to="/studio/path">Guided path</NavLink>
+          </NavSection>
+
+          <NavSection label="Every week">
+            <NavLink to="/studio/followups" badge={dueCount}>
+              Follow-ups
+            </NavLink>
+            <NavLink to="/studio/todos" badge={openTodoCount}>
+              My to-dos
+            </NavLink>
+            <NavLink to="/studio/conversations">Conversations</NavLink>
+          </NavSection>
+
+          <NavSection label="Tools">
+            <NavLink to="/studio/campaigns">Campaigns</NavLink>
+            <NavLink to="/studio/playbook">My playbook</NavLink>
+          </NavSection>
+        </div>
+
 
         <div className="flex items-center justify-between px-5 pb-2 pt-7">
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -245,7 +207,7 @@ function StudioLayout() {
             const label = agentId === "other" ? "Other" : AGENTS[agentId].name;
             const hasActive = group.some((thread) => thread.id === params.threadId);
             return (
-              <details key={agentId} open={hasActive || group.length <= 5} className="group">
+              <details key={agentId} open={hasActive} className="group">
                 <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/60">
                   <span className="flex items-center gap-2">
                     {agentId !== "other" ? (
@@ -374,5 +336,45 @@ function StudioLayout() {
         <Outlet />
       </div>
     </div>
+  );
+}
+
+function NavSection({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <details className="group">
+      <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2 text-sm uppercase tracking-wider text-muted-foreground hover:bg-sidebar-accent">
+        {label}
+        <ChevronRight className="h-4 w-4 shrink-0 transition-transform group-open:rotate-90" />
+      </summary>
+      <div className="mt-1 space-y-1">{children}</div>
+    </details>
+  );
+}
+
+function NavLink({
+  to,
+  children,
+  badge,
+}: {
+  to: string;
+  children: React.ReactNode;
+  badge?: number;
+}) {
+  const pathname = useRouterState({ select: (router) => router.location.pathname });
+  const active = to === "/studio" ? pathname === "/studio" : pathname.startsWith(to);
+  return (
+    <Link
+      to={to}
+      className={`flex items-center justify-between gap-2 rounded-lg border-l-2 py-2 pl-3 pr-3 text-sm transition-colors ${
+        active
+          ? "border-primary bg-sidebar-accent font-medium text-sidebar-foreground"
+          : "border-transparent text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+      }`}
+    >
+      <span>{children}</span>
+      {badge && badge > 0 ? (
+        <span className="rounded-full bg-primary px-2 text-sm text-primary-foreground">{badge}</span>
+      ) : null}
+    </Link>
   );
 }
