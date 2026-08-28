@@ -7,7 +7,26 @@ import {
   useParams,
   useRouterState,
 } from "@tanstack/react-router";
-import { Archive, ArchiveRestore, ChevronRight, Pencil, Pin, PinOff } from "lucide-react";
+import {
+  Archive,
+  ArchiveRestore,
+  BookOpen,
+  CalendarClock,
+  ChevronRight,
+  ClipboardList,
+  Home,
+  Layers,
+  ListChecks,
+  Megaphone,
+  MessagesSquare,
+  Mic,
+  Pencil,
+  Pin,
+  PinOff,
+  Route as RouteIcon,
+  Search,
+  type LucideIcon,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -140,31 +159,49 @@ function StudioLayout() {
         </div>
 
         <div className="mt-4 space-y-1 px-3">
-          <NavLink to="/studio">Home</NavLink>
-          <NavLink to="/studio/brief">Audience Audit</NavLink>
-          <NavLink to="/studio/lists">Find Prospects &amp; Lists</NavLink>
+          <NavLink to="/studio" icon={Home}>
+            Home
+          </NavLink>
+          <NavLink to="/studio/brief" icon={ClipboardList}>
+            Audience Audit
+          </NavLink>
+          <NavLink to="/studio/lists" icon={Search}>
+            Find Prospects &amp; Lists
+          </NavLink>
         </div>
 
         <div className="mt-6 space-y-4 px-3">
           <NavSection label="Foundation">
-            <NavLink to="/studio/business">Business core &amp; voice</NavLink>
-            <NavLink to="/studio/offers">Offers</NavLink>
-            <NavLink to="/studio/path">Guided path</NavLink>
+            <NavLink to="/studio/business" icon={Mic}>
+              Business core &amp; voice
+            </NavLink>
+            <NavLink to="/studio/offers" icon={Layers}>
+              Offers
+            </NavLink>
+            <NavLink to="/studio/path" icon={RouteIcon}>
+              Guided path
+            </NavLink>
           </NavSection>
 
           <NavSection label="Every week">
-            <NavLink to="/studio/followups" badge={dueCount}>
+            <NavLink to="/studio/followups" icon={CalendarClock} badge={dueCount}>
               Follow-ups
             </NavLink>
-            <NavLink to="/studio/todos" badge={openTodoCount}>
+            <NavLink to="/studio/todos" icon={ListChecks} badge={openTodoCount}>
               My to-dos
             </NavLink>
-            <NavLink to="/studio/conversations">Conversations</NavLink>
+            <NavLink to="/studio/conversations" icon={MessagesSquare}>
+              Conversations
+            </NavLink>
           </NavSection>
 
           <NavSection label="Tools">
-            <NavLink to="/studio/campaigns">Campaigns</NavLink>
-            <NavLink to="/studio/playbook">My playbook</NavLink>
+            <NavLink to="/studio/campaigns" icon={Megaphone}>
+              Campaigns
+            </NavLink>
+            <NavLink to="/studio/playbook" icon={BookOpen}>
+              My playbook
+            </NavLink>
           </NavSection>
         </div>
 
@@ -355,10 +392,12 @@ function NavLink({
   to,
   children,
   badge,
+  icon: Icon,
 }: {
   to: string;
   children: React.ReactNode;
   badge?: number;
+  icon?: LucideIcon;
 }) {
   const pathname = useRouterState({ select: (router) => router.location.pathname });
   const active = to === "/studio" ? pathname === "/studio" : pathname.startsWith(to);
@@ -368,10 +407,13 @@ function NavLink({
       className={`flex items-center justify-between gap-2 rounded-lg border-l-2 py-2 pl-3 pr-3 text-sm transition-colors ${
         active
           ? "border-primary bg-sidebar-accent font-medium text-sidebar-foreground"
-          : "border-transparent text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+          : "border-transparent text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-foreground"
       }`}
     >
-      <span>{children}</span>
+      <span className="flex items-center gap-2.5">
+        {Icon ? <Icon className="h-4 w-4 shrink-0" aria-hidden /> : null}
+        {children}
+      </span>
       {badge && badge > 0 ? (
         <span className="rounded-full bg-primary px-2 text-sm text-primary-foreground">{badge}</span>
       ) : null}
