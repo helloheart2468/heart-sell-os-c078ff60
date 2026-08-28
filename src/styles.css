@@ -106,8 +106,8 @@
   --card-foreground: #f6f6f6;
   --popover: #2b2b31;
   --popover-foreground: #f6f6f6;
-  --primary: #f21882;
-  --primary-foreground: #faf4f7;
+  --primary: #e0267c;
+  --primary-foreground: #fef8fb;
   --secondary: #33333a;
   --secondary-foreground: #f6f6f6;
   --muted: #33333a;
@@ -118,11 +118,11 @@
   --destructive-foreground: #222226;
   --border: rgb(255 255 255 / 14%);
   --input: rgb(255 255 255 / 18%);
-  --ring: #f21882;
+  --ring: #e0267c;
   --sage: #f6f6f6;
   --sage-foreground: #222226;
-  --scout: #f21882;
-  --scout-foreground: #faf4f7;
+  --scout: #e0267c;
+  --scout-foreground: #fef8fb;
   --quill: #ff77b4;
   --quill-foreground: #222226;
   --ace: #b3b3bd;
