@@ -207,7 +207,7 @@ function StudioLayout() {
             const label = agentId === "other" ? "Other" : AGENTS[agentId].name;
             const hasActive = group.some((thread) => thread.id === params.threadId);
             return (
-              <details key={agentId} open={hasActive || group.length <= 5} className="group">
+              <details key={agentId} open={hasActive} className="group">
                 <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent/60">
                   <span className="flex items-center gap-2">
                     {agentId !== "other" ? (
