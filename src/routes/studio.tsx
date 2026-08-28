@@ -132,80 +132,35 @@ function StudioLayout() {
           </Link>
         </div>
 
-        <div className="px-5 pt-3">
-          <Link
-            to="/studio"
-            className="flex h-9 w-full items-center justify-center rounded-full bg-primary text-sm font-medium text-primary-foreground"
-          >
-            New session
-          </Link>
-          <Link
-            to="/studio/path"
-            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            Guided path
-          </Link>
-          <Link
-            to="/studio/brief"
-            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            Audience Audit
-          </Link>
-          <Link
-            to="/studio/business"
-            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            Business core
-          </Link>
-          <Link
-            to="/studio/lists"
-            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            My lists
-          </Link>
-          <Link
-            to="/studio/campaigns"
-            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            Campaigns
-          </Link>
-          <Link
-            to="/studio/conversations"
-            className="mt-2 flex h-9 w-full items-center justify-center rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            Conversations
-          </Link>
-
-          <Link
-            to="/studio/followups"
-            className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            Follow-ups
-            {dueCount > 0 ? (
-              <span className="rounded-full bg-primary px-2 text-sm text-primary-foreground">
-                {dueCount}
-              </span>
-            ) : null}
-          </Link>
-          <Link
-            to="/studio/todos"
-            className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            My to-dos
-            {openTodoCount > 0 ? (
-              <span className="rounded-full bg-primary px-2 text-sm text-primary-foreground">
-                {openTodoCount}
-              </span>
-            ) : null}
-          </Link>
-          <Link
-            to="/studio/playbook"
-            className="mt-2 flex h-9 w-full items-center justify-center gap-2 rounded-full border border-border text-sm text-sidebar-foreground hover:bg-sidebar-accent"
-          >
-            My playbook
-          </Link>
-
+        <div className="mt-4 space-y-1 px-3">
+          <NavLink to="/studio">Home</NavLink>
+          <NavLink to="/studio/brief">Audience Audit</NavLink>
+          <NavLink to="/studio/lists">Find Prospects &amp; Lists</NavLink>
         </div>
+
+        <div className="mt-6 space-y-4 px-3">
+          <NavSection label="Foundation">
+            <NavLink to="/studio/business">Business core &amp; voice</NavLink>
+            <NavLink to="/studio/offers">Offers</NavLink>
+            <NavLink to="/studio/path">Guided path</NavLink>
+          </NavSection>
+
+          <NavSection label="Every week">
+            <NavLink to="/studio/followups" badge={dueCount}>
+              Follow-ups
+            </NavLink>
+            <NavLink to="/studio/todos" badge={openTodoCount}>
+              My to-dos
+            </NavLink>
+            <NavLink to="/studio/conversations">Conversations</NavLink>
+          </NavSection>
+
+          <NavSection label="Tools">
+            <NavLink to="/studio/campaigns">Campaigns</NavLink>
+            <NavLink to="/studio/playbook">My playbook</NavLink>
+          </NavSection>
+        </div>
+
 
         <div className="flex items-center justify-between px-5 pb-2 pt-7">
           <p className="text-xs uppercase tracking-wider text-muted-foreground">
