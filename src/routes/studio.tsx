@@ -1,5 +1,12 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, Link, Outlet, useNavigate, useParams } from "@tanstack/react-router";
+import {
+  createFileRoute,
+  Link,
+  Outlet,
+  useNavigate,
+  useParams,
+  useRouterState,
+} from "@tanstack/react-router";
 import { Archive, ArchiveRestore, ChevronRight, Pencil, Pin, PinOff } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -329,5 +336,45 @@ function StudioLayout() {
         <Outlet />
       </div>
     </div>
+  );
+}
+
+function NavSection({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <details className="group">
+      <summary className="flex cursor-pointer list-none items-center justify-between rounded-lg px-3 py-2 text-sm uppercase tracking-wider text-muted-foreground hover:bg-sidebar-accent">
+        {label}
+        <ChevronRight className="h-4 w-4 shrink-0 transition-transform group-open:rotate-90" />
+      </summary>
+      <div className="mt-1 space-y-1">{children}</div>
+    </details>
+  );
+}
+
+function NavLink({
+  to,
+  children,
+  badge,
+}: {
+  to: string;
+  children: React.ReactNode;
+  badge?: number;
+}) {
+  const pathname = useRouterState({ select: (router) => router.location.pathname });
+  const active = to === "/studio" ? pathname === "/studio" : pathname.startsWith(to);
+  return (
+    <Link
+      to={to}
+      className={`flex items-center justify-between gap-2 rounded-lg border-l-2 py-2 pl-3 pr-3 text-sm transition-colors ${
+        active
+          ? "border-primary bg-sidebar-accent font-medium text-sidebar-foreground"
+          : "border-transparent text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+      }`}
+    >
+      <span>{children}</span>
+      {badge && badge > 0 ? (
+        <span className="rounded-full bg-primary px-2 text-sm text-primary-foreground">{badge}</span>
+      ) : null}
+    </Link>
   );
 }
