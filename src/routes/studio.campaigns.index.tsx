@@ -181,7 +181,7 @@ function CampaignsPage() {
                   title={entry.hint}
                   className={`h-9 rounded-full border px-4 ${
                     purpose === entry.value
-                      ? "border-primary bg-primary text-primary-foreground"
+                      ? "border-primary bg-primary/10 text-foreground"
                       : "border-border text-foreground hover:bg-muted"
                   }`}
                 >
@@ -261,7 +261,7 @@ function CampaignsPage() {
               <Link
                 to="/studio/campaigns/$campaignId"
                 params={{ campaignId: campaign.id }}
-                className="flex h-9 items-center rounded-full bg-primary px-4 font-medium text-primary-foreground"
+                className="btn-soft flex h-9 items-center rounded-full px-4 font-medium"
               >
                 Open
               </Link>

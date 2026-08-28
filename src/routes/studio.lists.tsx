@@ -396,7 +396,7 @@ function ListsPage() {
                         <button
                           type="button"
                           onClick={() => handOff("quill", prospect)}
-                          className="h-9 rounded-full bg-primary px-4 font-medium text-primary-foreground"
+                          className="btn-soft h-9 rounded-full px-4 font-medium"
                         >
                           Draft outreach
                         </button>

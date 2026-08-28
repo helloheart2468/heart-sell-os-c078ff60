@@ -60,9 +60,9 @@
 
 :root {
   --radius: 0.75rem;
-  --background: #fef8fb;
+  --background: #fdfcfa;
   --foreground: #222226;
-  --paper: #fef8fb;
+  --paper: #fdfcfa;
   --ink: #222226;
   --card: #fef8fb;
   --card-foreground: #222226;
@@ -73,7 +73,7 @@
   --secondary: #e8f0ff;
   --secondary-foreground: #222226;
   --muted: #e8f0ff;
-  --muted-foreground: #5f5e5a;
+  --muted-foreground: #222226;
   --accent: #e8f0ff;
   --accent-foreground: #222226;
   --destructive: #b3123f;
@@ -87,12 +87,12 @@
   --scout-foreground: #fef8fb;
   --quill: #8f1a58;
   --quill-foreground: #fef8fb;
-  --ace: #5f5e5a;
+  --ace: #222226;
   --ace-foreground: #fef8fb;
-  --sidebar: #ffffff;
+  --sidebar: #fef8fb;
   --sidebar-foreground: #222226;
   --sidebar-border: #e6dbe2;
-  --sidebar-accent: #fef8fb;
+  --sidebar-accent: #ffffff;
   --sidebar-accent-foreground: #222226;
 }
 
@@ -111,7 +111,7 @@
   --secondary: #33333a;
   --secondary-foreground: #f6f6f6;
   --muted: #33333a;
-  --muted-foreground: #b3b3bd;
+  --muted-foreground: #f6f6f6;
   --accent: #33333a;
   --accent-foreground: #f6f6f6;
   --destructive: #ff4d7d;
@@ -125,7 +125,7 @@
   --scout-foreground: #fef8fb;
   --quill: #ff77b4;
   --quill-foreground: #222226;
-  --ace: #b3b3bd;
+  --ace: #f6f6f6;
   --ace-foreground: #222226;
   --sidebar: #2b2b31;
   --sidebar-foreground: #f6f6f6;
@@ -161,6 +161,18 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-paper);
+}
+
+/*
+ * Soft secondary action: light-blue fill, ink text.
+ * Use instead of solid pink when a screen already has a primary CTA.
+ */
+@utility btn-soft {
+  background-color: var(--color-accent);
+  color: var(--color-accent-foreground);
+  &:hover {
+    background-color: color-mix(in oklab, var(--color-accent) 80%, var(--color-primary));
+  }
 }
 
 @utility rule-line {

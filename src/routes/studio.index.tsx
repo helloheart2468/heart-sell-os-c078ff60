@@ -118,7 +118,7 @@ function StudioHome() {
         <div className="mt-6 flex flex-wrap gap-2">
           <Link
             to="/studio/path"
-            className="flex h-10 items-center rounded-full bg-primary px-5 font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            className="btn-soft flex h-10 items-center rounded-full px-5 font-medium"
           >
             Run the full path
           </Link>
@@ -175,7 +175,7 @@ function StudioHome() {
                       ? navigate({ to: "/studio/brief" })
                       : setOpenAgent(agent.id)
                   }
-                  className="h-9 flex-1 rounded-full bg-primary text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+                  className="btn-soft h-9 flex-1 rounded-full text-sm font-medium"
                 >
                   {agent.structuredTitle}
                 </button>
